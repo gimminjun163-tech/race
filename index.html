@@ -220,7 +220,7 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
         <div id="modeOpts" class="sub"></div>
       </div>
       <div class="group">
-        <h3>플레이어 (최대 4명 · AI 최대 3명)</h3>
+        <h3>플레이어 (최대 4명 · 모두 AI도 가능)</h3>
         <div id="slots" style="display:flex;flex-direction:column;gap:6px"></div>
         <p class="hint">전차·장갑차를 고르면 그 플레이어가 자동차를 쫓아 공격하는 쪽이 돼요. 사람이면 직접 조종하고, AI면 가장 가까운 차를 알아서 쫓아요.</p>
         <label>AI 실력
@@ -236,7 +236,7 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
         <label>움직임 속도
           <select id="animSpeed"><option value="1">보통</option><option value="0.5">빠르게</option><option value="0.2">아주 빠르게</option></select>
         </label>
-        <p class="hint">전차: 한 칸씩 이동, 사거리 안의 차에 포탄(100% 명중). 장갑차: 세 칸까지 이동, 바로 옆을 지나거나 옆에 있는 차에 기관총 10발(한 발 10%). 맞은 차는 날아간 방향으로 벽까지 밀려나 5턴 전복. 폭격 구역에서 턴을 마치면 15% 확률로 B-2 폭격(3턴 전복).</p>
+        <p class="hint">전차: 한 칸씩 이동, 사거리 안의 차에 포탄(100% 명중). 장갑차: 세 칸까지 이동, 바로 옆을 지나거나 옆에 있는 차에 기관총 10발(한 발 10%). 맞은 차는 날아간 방향으로 벽까지 밀려나 5턴 전복. 폭격 구역에서 턴을 마치면 15% 확률로 B-2 편대 폭격 — 이어진 구역 안의 모든 차가 3턴 전복(전쟁 모드는 탈락), 전차·장갑차는 무사.</p>
       </div>
       <p class="err" id="setupErr"></p>
       <button class="btn primary" id="startBtn">게임 시작</button>
@@ -323,7 +323,7 @@ const TOOLS={
   erase:{n:'지우개',h:'트랙을 지워 벽을 만들어요. 붓을 작게 하면 트랙 안에 가는 벽을 그을 수 있어요.'},
   oil:{n:'기름',h:'기름 위에 선 차는 가속·제동·방향 전환을 못 하고, 지난 턴과 똑같은 속도와 방향으로 미끄러져요.'},
   oilerase:{n:'기름 지우기',h:'칠한 기름을 닦아내요.'},
-  bomb:{n:'폭격 구역',h:'연주황 구역이에요. 차가 여기서 턴을 마치면 15% 확률로 B-2가 폭격해 3턴 동안 전복돼요.'},
+  bomb:{n:'폭격 구역',h:'연주황 구역이에요. 차가 여기서 턴을 마치면 15% 확률로 B-2 편대가 날아와 폭탄을 퍼붓고, 이어진 구역 안의 차가 모두 3턴 동안 전복돼요 (전차·장갑차는 무사).'},
   bomberase:{n:'폭격 지우기',h:'칠한 폭격 구역을 지워요.'},
   start:{n:'출발선',h:'점에서 점으로 드래그해 출발선(=결승선)을 그어요. 비스듬히 그어도 돼요. 화살표가 달리는 방향이에요.'},
   flag:{n:'깃발',h:'모눈 점을 눌러 깃발을 놓거나 치워요. 트랙 위에만 놓을 수 있어요.'},
@@ -463,7 +463,7 @@ function drawLabels(c){
 }
 
 /* ---------- masks & geometry ---------- */
-let MASK=null,OILM=null,BOMBM=null,PT=null,MW=0,MH=0,VAL={};
+let MASK=null,OILM=null,BOMBM=null,PT=null,MW=0,MH=0,VAL={},BZ=null,ZONES=[];
 function buildMasks(){
   MW=S.map.cols*M+1;MH=S.map.rows*M+1;
   const a=L.tmask.ctx.getImageData(0,0,MW,MH).data,b=L.omask.ctx.getImageData(0,0,MW,MH).data,c=L.bmask.ctx.getImageData(0,0,MW,MH).data;
@@ -474,6 +474,14 @@ function buildMasks(){
   for(const s of [1,2,3]){const V=new Uint8Array(NW*NH);
     for(let y=0;y+s-1<NH;y++)for(let x=0;x+s-1<NW;x++){let ok=1;for(let dy=0;dy<s&&ok;dy++)for(let dx=0;dx<s;dx++)if(!PT[(y+dy)*NW+x+dx]){ok=0;break;}V[y*NW+x]=ok;}
     VAL[s]=V;}
+  BZ=new Int32Array(NW*NH).fill(-1);ZONES=[];
+  const BP=new Uint8Array(NW*NH);for(let y=0;y<NH;y++)for(let x=0;x<NW;x++)BP[y*NW+x]=onBomb(x,y);
+  const q=new Int32Array(NW*NH);
+  for(let i0=0;i0<NW*NH;i0++){if(!BP[i0]||BZ[i0]>=0)continue;const id=ZONES.length,pts=[];let h=0,t=0;BZ[i0]=id;q[t++]=i0;
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    while(h<t){const i=q[h++],x=i%NW,y=(i/NW)|0;pts.push([x,y]);x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);
+      for(const[dx,dy]of NB8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=NW||ny>=NH)continue;const j=ny*NW+nx;if(BP[j]&&BZ[j]<0){BZ[j]=id;q[t++]=j;}}}
+    ZONES.push({pts,bbox:[x0,y0,x1,y1],cx:(x0+x1)/2,cy:(y0+y1)/2});}
 }
 function mIdx(x,y){const i=Math.round(x*M),j=Math.round(y*M);if(i<0||j<0||i>=MW||j>=MH)return -1;return j*MW+i;}
 function onT(x,y){const k=mIdx(x,y);return k<0?0:MASK[k];}
@@ -696,7 +704,7 @@ function renderSlots(){
   sl.forEach((s,i)=>{
     const sel=$('#st'+i);sel.value=s.type;$('#ss'+i).value=s.size;
     sel.onchange=e=>{const prev=s.type;s.type=e.target.value;
-      if(sl.filter(q=>q.type.startsWith('ai')).length>3){s.type=prev;$('#setupErr').textContent='AI는 최대 3명까지 넣을 수 있어요.';}else $('#setupErr').textContent='';
+      $('#setupErr').textContent='';
       renderSlots();};
     $('#ss'+i).onchange=e=>s.size=+e.target.value;
     $('#sn'+i).oninput=e=>s.name=e.target.value;
@@ -706,8 +714,7 @@ function prepare(){
   const sl=S.setup.slots,act=sl.filter(s=>s.type!=='none'),cars=act.filter(s=>s.type==='human'||s.type==='ai');
   if(!act.length)return{err:'플레이어를 한 명 이상 넣어 주세요.'};
   if(!cars.length)return{err:'자동차 플레이어(사람이나 AI)가 한 명 이상 있어야 해요.'};
-  if(sl.filter(s=>s.type.startsWith('ai')).length>3)return{err:'AI는 자동차·전차·장갑차를 합쳐 최대 3명까지예요.'};
-  if(!S.map.start)return{err:'맵 만들기에서 출발선을 먼저 그어 주세요.'};
+    if(!S.map.start)return{err:'맵 만들기에서 출발선을 먼저 그어 주세요.'};
   buildMasks();
   const NW=S.map.cols+1,units=[];let dropped=0;
   for(const u of S.map.units){const nu={type:u.type,x:u.x,y:u.y,size:u.size,ctrl:u.ctrl||'auto'};
@@ -920,14 +927,29 @@ function eliminate(G,p,src){
   p.out=true;p.flip=0;p.skip=0;log(p,`${p.name} ${src}에 맞아 탈락!`,'crash');updatePanel();
   if(G.mode==='war'&&!liveCars(G).length)endWar(G);
 }
+function zoneOf(x,y){if(!BZ||x<0||y<0||x>S.map.cols||y>S.map.rows)return -1;return BZ[y*(S.map.cols+1)+x];}
 async function bombCheck(G,p){
   if(p.out||p.flip>0||!onBomb(p.x,p.y))return;
+  const zi=zoneOf(p.x,p.y);if(zi<0)return;
   if(Math.random()>=.15)return;
-  setMsg(p.color,`B-2 폭격기 접근! ${p.name} 위로 폭탄이 떨어져요`);
-  fx(G,{k:'b2',x:p.x,y:p.y,dur:1300});await sleep(G,900);
-  fx(G,{k:'boom',x:p.x,y:p.y,dur:900,big:true});await sleep(G,450);
-  if(G.mode==='war')eliminate(G,p,'B-2 폭격');
-  else{p.flip=3;p.skip=0;p.vx=p.vy=0;log(p,`${p.name} B-2 폭격에 전복! 3턴 동안 못 움직여요`,'crash');updatePanel();}
+  const Z=ZONES[zi],victims=liveCars(G).filter(q=>zoneOf(q.x,q.y)===zi);
+  const ang=Math.random()*Math.PI*2,dx=Math.cos(ang),dy=Math.sin(ang);
+  const R=Math.max(3,Math.hypot(Z.bbox[2]-Z.bbox[0],Z.bbox[3]-Z.bbox[1])/2),m=Math.max(VW,VH)/S.zoom*.6+4,L=R+m;
+  const nb=clamp(Math.round(Z.pts.length/2),14,70),tg=[];
+  for(let i=0;i<nb;i++){const q=Z.pts[Math.floor(Math.random()*Z.pts.length)];tg.push([q[0]+(Math.random()-.5)*.8,q[1]+(Math.random()-.5)*.8]);}
+  for(const v of victims)tg.push([v.x,v.y]);
+  const bombs=tg.map(t=>{const sp=(t[0]-Z.cx)*dx+(t[1]-Z.cy)*dy;return{x:t[0],y:t[1],kd:clamp((sp+L)/(2*L)-.05+Math.random()*.03,.02,.9)};});
+  const dur=clamp(2000+R*45,2000,4200);
+  setMsg(p.color,`B-2 편대 접근! 폭격 구역 안의 차 ${victims.length}대가 위험해요`);
+  centerOn(Z.cx,Z.cy);
+  fx(G,{k:'b2',cx:Z.cx,cy:Z.cy,dx,dy,L,bombs,dur});
+  await sleep(G,dur*.92);
+  log(null,`B-2 폭격! 폭격 구역의 차 ${victims.map(v=>v.name).join(', ')} 피해`,'crash');
+  for(const v of victims){
+    if(G.mode==='war'){eliminate(G,v,'B-2 폭격');if(G.phase==='over')return;}
+    else{v.flip=Math.max(v.flip,3);v.skip=0;v.vx=v.vy=0;log(v,`${v.name} B-2 폭격에 전복! 3턴 동안 못 움직여요`,'crash');}
+  }
+  updatePanel();await sleep(G,300);
 }
 function finishFlags(G){const mx=Math.max(...cars(G).map(p=>p.score));win(G,cars(G).filter(p=>p.score===mx),'flag');}
 function endWar(G){const h=G.players.filter(p=>p.kind!=='car');win(G,h,'wiped');}
@@ -1292,10 +1314,23 @@ function drawFx(c,G,t){
       c.fillStyle='#ff8a3d';c.beginPath();c.arc(X(f.x),Y(f.y),R*(.4+k),0,7);c.fill();
       c.fillStyle='#ffd23f';c.beginPath();c.arc(X(f.x),Y(f.y),R*(.25+k*.5),0,7);c.fill();
       c.strokeStyle=C.ink;c.lineWidth=1.5;c.beginPath();c.arc(X(f.x),Y(f.y),R*(.5+k*1.2),0,7);c.stroke();c.restore();}
-    else if(f.k==='b2'){const span=Math.max(VW,VH)/S.zoom*.7+6,x=f.x-span/2+span*k,y=f.y-span*.12+span*.24*k,sc=Math.max(30,S.zoom*3);
-      c.save();c.globalAlpha=.25;drawB2(c,X(x)+sc*.4,Y(y)+sc*.5,0.24,sc);c.restore();
-      drawB2(c,X(x),Y(y),0.24,sc);
-      if(k>.45&&k<.7){c.save();c.fillStyle=C.ink;const n=4;for(let i=0;i<n;i++){const bx=f.x+(i-1.5)*.5,by=f.y-(1-(k-.45)/.25)*3;c.beginPath();c.ellipse(X(bx),Y(by),3,5,0,0,7);c.fill();}c.restore();}}
+    else if(f.k==='b2'){
+      const sc=Math.max(30,S.zoom*3),ang=Math.atan2(f.dy,f.dx),nx=-f.dy,ny=f.dx,gap=sc*1.25/S.zoom;
+      const px=f.cx+f.dx*(-f.L+2*f.L*k),py=f.cy+f.dy*(-f.L+2*f.L*k);
+      const fall=.09,burn=.22;
+      for(const b of f.bombs){
+        if(k<b.kd)continue;const e=(k-b.kd);
+        if(e<fall){const u=e/fall,ox=f.cx+f.dx*(-f.L+2*f.L*b.kd),oy=f.cy+f.dy*(-f.L+2*f.L*b.kd),bx=ox+(b.x-ox)*u,by=oy+(b.y-oy)*u;
+          c.save();c.translate(X(bx),Y(by));c.rotate(ang);c.fillStyle=C.ink;c.beginPath();c.ellipse(0,0,Math.max(3,S.zoom*.22)*(1.6-u*.6),Math.max(2,S.zoom*.13),0,0,7);c.fill();c.restore();}
+        else if(e<fall+burn){const u=(e-fall)/burn,R=Math.max(8,S.zoom*1.1);c.save();c.globalAlpha=1-u;
+          c.fillStyle='#ff8a3d';c.beginPath();c.arc(X(b.x),Y(b.y),R*(.4+u),0,7);c.fill();
+          c.fillStyle='#ffd23f';c.beginPath();c.arc(X(b.x),Y(b.y),R*(.25+u*.45),0,7);c.fill();
+          c.strokeStyle=C.ink;c.lineWidth=1.2;c.beginPath();c.arc(X(b.x),Y(b.y),R*(.5+u*1.1),0,7);c.stroke();c.restore();}
+        else if(e<fall+burn+.25){c.save();c.globalAlpha=.35*(1-(e-fall-burn)/.25);c.fillStyle=C.ink;c.beginPath();c.arc(X(b.x),Y(b.y),Math.max(4,S.zoom*.5),0,7);c.fill();c.restore();}
+      }
+      for(const[o,back]of[[0,0],[-1,1],[1,1]]){const qx=px+nx*o*gap-f.dx*back*gap,qy=py+ny*o*gap-f.dy*back*gap;
+        c.save();c.globalAlpha=.22;drawB2(c,X(qx)+sc*.4,Y(qy)+sc*.5,ang,sc);c.restore();drawB2(c,X(qx),Y(qy),ang,sc);}
+    }
   }
 }
 function lerpPos(a,k){return[a.from[0]+(a.to[0]-a.from[0])*k,a.from[1]+(a.to[1]-a.from[1])*k];}
