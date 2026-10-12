@@ -222,7 +222,7 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
       <div class="group">
         <h3>플레이어 (최대 4명 · AI 최대 3명)</h3>
         <div id="slots" style="display:flex;flex-direction:column;gap:6px"></div>
-        <p class="hint">전차·장갑차를 고르면 그 플레이어가 직접 조종해요. 자동차를 쫓아 공격하는 쪽이에요.</p>
+        <p class="hint">전차·장갑차를 고르면 그 플레이어가 자동차를 쫓아 공격하는 쪽이 돼요. 사람이면 직접 조종하고, AI면 가장 가까운 차를 알아서 쫓아요.</p>
         <label>AI 실력
           <select id="aiLevel"><option value="easy">쉬움</option><option value="normal">보통</option><option value="hard">어려움</option></select>
         </label>
@@ -329,13 +329,13 @@ const TOOLS={
   flag:{n:'깃발',h:'모눈 점을 눌러 깃발을 놓거나 치워요. 트랙 위에만 놓을 수 있어요.'},
   gate:{n:'관문',h:'드래그해서 관문을 1번부터 순서대로 그어요. 이미 있는 관문을 짧게 누르면 지워져요.'},
   tank:{n:'전차',h:'누른 곳에 전차를 놓아요. 몇 대든 놓을 수 있고, 다시 누르면 치워져요. 가장 가까운 차를 쫓아 한 칸씩 움직이며 포탄을 쏴요.'},
-  apc:{n:'장갑차',h:'누른 곳에 장갑차를 놓아요. 몇 대든 놓을 수 있고, 다시 누르면 치워져요. 가장 가까운 차를 쫓아 세 칸까지 움직이며 바로 옆 차에 기관총을 쏴요.'}
+  apc:{n:'장갑차',h:'누른 곳에 장갑차를 놓아요. 몇 대든 놓을 수 있고, 다시 누르면 치워져요. 가장 가까운 차를 쫓아 세 칸까지 움직이며 바로 옆 차에 기관총을 쏴요. 사람이 조종으로 놓으면 게임 중에 직접 움직일 수 있어요.'}
 };
 const BRUSH_K={track:'t',erase:'te',oil:'o',oilerase:'oe',bomb:'b',bomberase:'be'};
 const MODE_NAME={race:'기본 레이스',flag:'깃발 뺏기',gate:'관문 통과',war:'전쟁'};
 const UNIT_NAME={tank:'전차',apc:'장갑차'};
 
-const S={map:null,zoom:16,camX:0,camY:0,tool:'track',brush:3,unitSize:2,view:'edit',undo:[],drag:null,cursor:null,hover:-1,G:null,cq:false,
+const S={map:null,zoom:16,camX:0,camY:0,tool:'track',brush:3,unitSize:2,unitCtrl:'auto',view:'edit',undo:[],drag:null,cursor:null,hover:-1,G:null,cq:false,
   setup:{mode:'race',laps:1,stopRule:'land',flagCount:5,ai:'normal',warTurns:15,tankRange:10,tankReload:2,anim:1,
     slots:[{type:'human',name:'',size:2},{type:'ai',name:'',size:2},{type:'none',name:'',size:2},{type:'none',name:'',size:2}]}};
 
@@ -355,7 +355,7 @@ function defaultMap(){
     gates:[{a:[24,3],b:[24,11]},{a:[49,22],b:[57,22]},{a:[42,30],b:[42,38]}],
     units:[{type:'tank',x:47,y:32,size:2},{type:'apc',x:30,y:31,size:1}]};
 }
-function normMap(m){m.strokes=m.strokes||[];m.flags=m.flags||[];m.gates=m.gates||[];m.units=m.units||[];if(m.start===undefined)m.start=null;return m;}
+function normMap(m){m.strokes=m.strokes||[];m.flags=m.flags||[];m.gates=m.gates||[];m.units=(m.units||[]).map(u=>Object.assign({ctrl:'auto'},u));if(m.start===undefined)m.start=null;return m;}
 
 /* ---------- view (camera) ---------- */
 const board=$('#board'),bctx=board.getContext('2d'),holder=$('#holder');
@@ -605,11 +605,11 @@ function editDown(g){
   else if(t==='tank'||t==='apc'){
     const p=snapPt(g);const hit=S.map.units.findIndex(u=>inFoot(u,p[0],p[1]));
     if(hit>=0){pushUndo();S.map.units.splice(hit,1);autosave();renderToolExtra();return;}
-    const s=S.unitSize,[x,y]=unitAtCursor(g,s),nu={type:t,x,y,size:s};
+    const s=S.unitSize,[x,y]=unitAtCursor(g,s),nu={type:t,x,y,size:s,ctrl:S.unitCtrl};
     if(x<0||y<0||x+s-1>S.map.cols||y+s-1>S.map.rows){$('#mStatus').textContent='모눈 안쪽에 놓아 주세요.';return;}
     for(let dy=0;dy<s;dy++)for(let dx=0;dx<s;dx++)if(!maskAtPoint(x+dx,y+dy)){$('#mStatus').textContent=`${UNIT_NAME[t]}는 몸 전체가 트랙 위에 있어야 해요. 트랙이 넓은 곳에 놓거나 크기를 줄여 보세요.`;return;}
     if(S.map.units.some(u=>boxOverlap(u,nu))){$('#mStatus').textContent='다른 전차·장갑차와 겹쳐요.';return;}
-    pushUndo();S.map.units.push(nu);autosave();renderToolExtra();$('#mStatus').textContent=`${UNIT_NAME[t]} ${s}×${s}를 놓았어요.`;
+    pushUndo();S.map.units.push(nu);autosave();renderToolExtra();$('#mStatus').textContent=`${UNIT_NAME[t]} ${s}×${s}를 놓았어요 (${S.unitCtrl==='human'?'사람이 조종':'스스로 움직임'}).`;
   }
 }
 function editMove(g){
@@ -657,7 +657,12 @@ function renderToolExtra(){
   }else if(t==='tank'||t==='apc'){
     const nt=S.map.units.filter(u=>u.type==='tank').length,na=S.map.units.length-nt;
     el.innerHTML=`<label>크기</label><div class="seg" id="sizeSeg">${[1,2,3].map(s=>`<button data-s="${s}" aria-pressed="${s===S.unitSize}">${s}×${s}</button>`).join('')}</div>
-      <div class="btnrow"><button class="btn" id="unitClear">전차·장갑차 모두 치우기</button></div><p class="hint">지금 전차 ${nt}대 · 장갑차 ${na}대</p>`;
+      <label>새로 놓을 유닛</label><div class="seg" id="ctrlSeg"><button data-c="auto" aria-pressed="${S.unitCtrl==='auto'}">스스로 움직임</button><button data-c="human" aria-pressed="${S.unitCtrl==='human'}">사람이 조종</button></div>
+      <div class="btnrow"><button class="btn" id="allAuto">모두 스스로</button><button class="btn" id="allHuman">모두 사람 조종</button></div>
+      <div class="btnrow"><button class="btn" id="unitClear">전차·장갑차 모두 치우기</button></div><p class="hint">지금 전차 ${nt}대 · 장갑차 ${na}대 · 그중 사람이 조종 ${S.map.units.filter(u=>u.ctrl==='human').length}대. 사람 표시가 붙은 유닛은 매 라운드 끝에 화면 앞의 사람이 직접 움직여요.</p>`;
+    el.querySelectorAll('#ctrlSeg button').forEach(b=>b.onclick=()=>{S.unitCtrl=b.dataset.c;renderToolExtra();});
+    $('#allAuto').onclick=()=>{pushUndo();S.map.units.forEach(u=>u.ctrl='auto');autosave();renderToolExtra();};
+    $('#allHuman').onclick=()=>{pushUndo();S.map.units.forEach(u=>u.ctrl='human');autosave();renderToolExtra();};
     el.querySelectorAll('#sizeSeg button').forEach(b=>b.onclick=()=>{S.unitSize=+b.dataset.s;renderToolExtra();});
     $('#unitClear').onclick=()=>{pushUndo();S.map.units=[];autosave();renderToolExtra();};
   }else el.innerHTML='';
@@ -687,11 +692,11 @@ function renderModeOpts(){
 }
 function renderSlots(){
   const sl=S.setup.slots;
-  $('#slots').innerHTML=sl.map((s,i)=>`<div class="slot${s.type==='none'?' off':''}"><span class="sw" style="--c:${PL[i].c}"></span><input type="text" id="sn${i}" maxlength="8" placeholder="${PL[i].n}" value="${esc(s.name)}" aria-label="${PL[i].n} 이름"><select id="st${i}" aria-label="${PL[i].n} 종류"><option value="human">사람 · 자동차</option><option value="ai">AI · 자동차</option><option value="tank">사람 · 전차</option><option value="apc">사람 · 장갑차</option><option value="none">없음</option></select><select id="ss${i}" aria-label="${PL[i].n} 크기" ${s.type==='tank'||s.type==='apc'?'':'disabled'}><option value="1">1×1</option><option value="2">2×2</option><option value="3">3×3</option></select></div>`).join('');
+  $('#slots').innerHTML=sl.map((s,i)=>`<div class="slot${s.type==='none'?' off':''}"><span class="sw" style="--c:${PL[i].c}"></span><input type="text" id="sn${i}" maxlength="8" placeholder="${PL[i].n}" value="${esc(s.name)}" aria-label="${PL[i].n} 이름"><select id="st${i}" aria-label="${PL[i].n} 종류"><option value="human">사람 · 자동차</option><option value="ai">AI · 자동차</option><option value="tank">사람 · 전차</option><option value="apc">사람 · 장갑차</option><option value="aitank">AI · 전차</option><option value="aiapc">AI · 장갑차</option><option value="none">없음</option></select><select id="ss${i}" aria-label="${PL[i].n} 크기" ${/tank|apc/.test(s.type)?'':'disabled'}><option value="1">1×1</option><option value="2">2×2</option><option value="3">3×3</option></select></div>`).join('');
   sl.forEach((s,i)=>{
     const sel=$('#st'+i);sel.value=s.type;$('#ss'+i).value=s.size;
     sel.onchange=e=>{const prev=s.type;s.type=e.target.value;
-      if(sl.filter(q=>q.type==='ai').length>3){s.type=prev;$('#setupErr').textContent='AI는 최대 3명까지 넣을 수 있어요.';}else $('#setupErr').textContent='';
+      if(sl.filter(q=>q.type.startsWith('ai')).length>3){s.type=prev;$('#setupErr').textContent='AI는 최대 3명까지 넣을 수 있어요.';}else $('#setupErr').textContent='';
       renderSlots();};
     $('#ss'+i).onchange=e=>s.size=+e.target.value;
     $('#sn'+i).oninput=e=>s.name=e.target.value;
@@ -701,11 +706,11 @@ function prepare(){
   const sl=S.setup.slots,act=sl.filter(s=>s.type!=='none'),cars=act.filter(s=>s.type==='human'||s.type==='ai');
   if(!act.length)return{err:'플레이어를 한 명 이상 넣어 주세요.'};
   if(!cars.length)return{err:'자동차 플레이어(사람이나 AI)가 한 명 이상 있어야 해요.'};
-  if(sl.filter(s=>s.type==='ai').length>3)return{err:'AI는 최대 3명까지예요.'};
+  if(sl.filter(s=>s.type.startsWith('ai')).length>3)return{err:'AI는 자동차·전차·장갑차를 합쳐 최대 3명까지예요.'};
   if(!S.map.start)return{err:'맵 만들기에서 출발선을 먼저 그어 주세요.'};
   buildMasks();
   const NW=S.map.cols+1,units=[];let dropped=0;
-  for(const u of S.map.units){const nu={type:u.type,x:u.x,y:u.y,size:u.size};
+  for(const u of S.map.units){const nu={type:u.type,x:u.x,y:u.y,size:u.size,ctrl:u.ctrl||'auto'};
     if(VAL[u.size]&&VAL[u.size][u.y*NW+u.x]&&!units.some(o=>boxOverlap(o,nu)))units.push(nu);else dropped++;}
   const cands=startCandidates(units);
   if(cands.length<cars.length)return{err:`출발선 위 빈 트랙 점이 ${cands.length}개뿐이에요. 출발선을 트랙을 가로지르게 길게 긋거나 위의 전차·장갑차를 옮겨 주세요.`};
@@ -730,9 +735,9 @@ function startGame(){
     tankRange:S.setup.tankRange,tankReload:S.setup.tankReload,speed:S.setup.anim,
     gates:S.map.gates.map(g=>({a:g.a.slice(),b:g.b.slice()})),flags:[],cur:0,phase:'place',turn:1,marks:[],fx:[],anim:null,uanim:null,input:null,
     opts:[],uopts:[],targets:[],segCache:new Map(),fwd:Math.atan2(st.dir*ex,st.dir*-ey)},r.d);
-  G.units=r.d.units.map(u=>Object.assign(u,{id:++UID,owner:null,cd:0,aim:G.fwd+Math.PI}));
+  const cnt={tank:0,apc:0};G.units=r.d.units.map(u=>Object.assign(u,{id:++UID,owner:null,cd:0,aim:G.fwd+Math.PI,label:`공용 ${UNIT_NAME[u.type]} ${++cnt[u.type]}`}));
   G.players=S.setup.slots.map((s,i)=>({s,i})).filter(o=>o.s.type!=='none').map(({s,i})=>({idx:i,name:(s.name||'').trim()||PL[i].n,color:PL[i].c,
-    kind:(s.type==='tank'||s.type==='apc')?s.type:'car',ai:s.type==='ai',size:s.size,
+    kind:/tank/.test(s.type)?'tank':/apc/.test(s.type)?'apc':'car',ai:s.type.startsWith('ai'),size:s.size,
     x:0,y:0,vx:0,vy:0,skip:0,flip:0,out:false,count:0,next:0,score:0,trail:[],fails:[],knocks:[],placed:false,heading:G.fwd,spin:0,unit:null}));
   if(G.mode==='flag')flagField(G);
   S.G=G;S.hover=-1;$('#log').innerHTML='';$('#overlay').hidden=true;
@@ -783,8 +788,10 @@ async function gameLoop(G){
         if(p.ai){setMsg(p.color,`${p.name}(AI)이 출발 자리를 고르는 중…`);await sleep(G,450);placeCar(G,p,aiPlace(G,p,G.free));}
         else{setMsg(p.color,`${p.name} 차례 — 출발선 위 동그라미 점을 눌러 차를 놓으세요`);placeCar(G,p,await waitInput(G,'placeCar'));}
       }else{
-        setMsg(p.color,`${p.name} — ${UNIT_NAME[p.kind]} ${p.size}×${p.size}를 놓을 트랙 위 빈 곳을 누르세요`);
-        placeUnit(G,p,await waitInput(G,'placeUnit'));
+        if(p.ai){setMsg(p.color,`${p.name}(AI)이 ${UNIT_NAME[p.kind]}를 놓을 곳을 고르는 중…`);await sleep(G,450);
+          const pos=aiPlaceUnit(G,p);if(!pos){log(p,`${p.name} ${UNIT_NAME[p.kind]}를 놓을 자리가 없어 빠졌어요`);p.out=true;continue;}placeUnit(G,p,pos);}
+        else{setMsg(p.color,`${p.name} — ${UNIT_NAME[p.kind]} ${p.size}×${p.size}를 놓을 트랙 위 빈 곳을 누르세요`);
+        placeUnit(G,p,await waitInput(G,'placeUnit'));}
       }
     }
     G.phase='race';log(null,'출발!');
@@ -794,7 +801,7 @@ async function gameLoop(G){
         await playerTurn(G,p);if(G.phase==='over')return;
       }
       G.cur=-1;
-      if(G.units.some(u=>!u.owner)){setMsg('#5d6a3c','전차·장갑차가 움직이는 중…');updatePanel();await unitPhase(G);if(G.phase==='over')return;}
+      if(G.units.some(u=>!u.owner)){setMsg('#5d6a3c','공용 전차·장갑차가 움직이는 중…');updatePanel();await unitPhase(G);if(G.phase==='over')return;}
       if(G.mode==='war'){
         const alive=liveCars(G);
         if(!alive.length)return endWar(G);
@@ -806,7 +813,7 @@ async function gameLoop(G){
 }
 async function playerTurn(G,p){
   G.opts=[];G.uopts=[];G.targets=[];S.hover=-1;updatePanel();
-  if(p.kind!=='car')return humanUnitTurn(G,p);
+  if(p.kind!=='car'){if(!p.ai)return humanUnitTurn(G,p);const k=center(p.unit);ensureVisible(k.x,k.y);setMsg(p.color,`${p.name}(AI) ${UNIT_NAME[p.kind]}가 움직이는 중…`);await sleep(G,250);return unitAct(G,p.unit);}
   if(p.placed&&!p.out)ensureVisible(p.x,p.y);
   if(p.flip>0){p.flip--;setMsg(p.color,`${p.name} 뒤집혀 있어요… (남은 전복 ${p.flip}턴)`);updatePanel();await sleep(G,650);return;}
   if(p.skip>0){p.skip--;setMsg(p.color,`${p.name} 충돌 후 쉬는 중… (남은 휴식 ${p.skip}턴)`);updatePanel();await sleep(G,650);await bombCheck(G,p);return;}
@@ -1017,7 +1024,8 @@ async function apcAdjFire(G,u,fired){
 async function unitPhase(G){
   for(const u of G.units.filter(u=>!u.owner)){
     if(G.phase==='over')return;
-    await unitAct(G,u);
+    if(u.ctrl==='human'){const k=center(u);ensureVisible(k.x,k.y);G.ctrlUnit=u;G.ctrlColor=C.ink;try{await ctrlUnitTurn(G,u,C.ink,u.label);}finally{G.ctrlUnit=null;}}
+    else await unitAct(G,u);
   }
 }
 async function unitAct(G,u){
@@ -1037,25 +1045,26 @@ async function unitAct(G,u){
     }
   }
 }
-async function humanUnitTurn(G,p){
-  const u=p.unit;ensureVisible(center(u).x,center(u).y);
+async function humanUnitTurn(G,p){G.ctrlUnit=p.unit;G.ctrlColor=p.color;try{await ctrlUnitTurn(G,p.unit,p.color,p.name,p);}finally{G.ctrlUnit=null;}}
+async function ctrlUnitTurn(G,u,color,name,p){
+  p=p||null;ensureVisible(center(u).x,center(u).y);
   if(u.type==='tank'){
     if(u.cd>0)u.cd--;
     const occ=occGrid(G,u);G.uopts=[{x:u.x,y:u.y,stay:true,path:[]}];
     for(const[dx,dy]of NB8){const nx=u.x+dx,ny=u.y+dy;if(freeForUnit(u.size,nx,ny,occ))G.uopts.push({x:nx,y:ny,path:[[nx,ny]]});}
-    setMsg(p.color,`${p.name} 전차 — 한 칸 움직일 곳을 누르세요 (가운데 = 제자리)`);
+    setMsg(color,`${name} 전차 — 한 칸 움직일 곳을 누르세요 (가운데 = 제자리)`);
     const o=await waitInput(G,'unitMove');G.uopts=[];
     if(!o.stay)await moveUnit(G,u,[o.x,o.y]);
-    if(u.cd>0){log(p,`${p.name} 전차 재장전 중 (${u.cd}턴 남음)`);await sleep(G,300);return;}
+    if(u.cd>0){log(p,`${name} 전차 재장전 중 (${u.cd}턴 남음)`);await sleep(G,300);return;}
     const ts=tankTargets(G,u);
-    if(!ts.length){log(p,`${p.name} 전차 사거리 안에 쏠 차가 없음`);await sleep(G,300);return;}
-    G.targets=ts;setMsg(p.color,`${p.name} 전차 — 사거리 안의 차를 눌러 포탄을 쏘세요`);$('#turnAction').hidden=false;
+    if(!ts.length){log(p,`${name} 전차 사거리 안에 쏠 차가 없음`);await sleep(G,300);return;}
+    G.targets=ts;setMsg(color,`${name} 전차 — 사거리 안의 차를 눌러 포탄을 쏘세요`);$('#turnAction').hidden=false;
     const t=await waitInput(G,'unitFire');$('#turnAction').hidden=true;G.targets=[];
-    if(t)await tankFire(G,u,t);else log(p,`${p.name} 전차가 쏘지 않음`);
+    if(t)await tankFire(G,u,t);else log(p,`${name} 전차가 쏘지 않음`);
   }else{
     const fired=new Set();await apcAdjFire(G,u,fired);if(G.phase==='over')return;
     G.uopts=[{x:u.x,y:u.y,stay:true,path:[]}].concat(unitReach(G,u,3));
-    setMsg(p.color,`${p.name} 장갑차 — 세 칸 안에서 갈 곳을 누르세요 (지나가며 옆 차에 기관총 발사)`);
+    setMsg(color,`${name} 장갑차 — 세 칸 안에서 갈 곳을 누르세요 (지나가며 옆 차에 기관총 발사)`);
     const o=await waitInput(G,'unitMove');G.uopts=[];
     for(const st of o.path){await moveUnit(G,u,st);await apcAdjFire(G,u,fired);if(G.phase==='over')return;}
   }
@@ -1134,6 +1143,14 @@ function aiPick(G,p,list){
   if(Math.random()<lv.noise)return pool[Math.floor(Math.random()*pool.length)];
   return astar(G,p,pool,lv)||pool.reduce((a,b)=>Math.hypot(a.vx,a.vy)<=Math.hypot(b.vx,b.vy)?a:b);
 }
+function aiPlaceUnit(G,p){
+  const s=p.size,occ=occGrid(G,null),m=S.map,st=m.start,mx=(st.a[0]+st.b[0])/2,my=(st.a[1]+st.b[1])/2;
+  const cand=[];
+  for(let y=0;y+s-1<=m.rows;y++)for(let x=0;x+s-1<=m.cols;x++)if(freeForUnit(s,x,y,occ)){const d=Math.hypot(x+(s-1)/2-mx,y+(s-1)/2-my);cand.push([x,y,d]);}
+  if(!cand.length)return null;
+  const mid=cand.filter(c=>c[2]>=6&&c[2]<=Math.max(14,G.tankRange*1.3));
+  const pool=mid.length?mid:cand;const c=pool[Math.floor(Math.random()*pool.length)];return[c[0],c[1]];
+}
 function aiPlace(G,p,free){
   if(G.mode==='war'){let best=free[0],bs=-Infinity;for(const c of free){let m=Infinity;for(const u of G.units){const k=center(u);m=Math.min(m,Math.hypot(c[0]-k.x,c[1]-k.y));}const s=(isFinite(m)?m:0)+Math.random();if(s>bs){bs=s;best=c;}}return best;}
   let best=[],bh=Infinity;
@@ -1152,10 +1169,10 @@ function updatePanel(){
       const oil=p.placed&&!p.out&&onOil(p.x,p.y);
       stat=`<span class="mono">속도 ${fmtV(p.vx,p.vy)}</span><span>${prog}</span>${p.flip>0?`<span class="tag flip">전복 ${p.flip}턴</span>`:''}${p.skip>0?`<span class="tag warn">휴식 ${p.skip}턴</span>`:''}${oil?'<span class="tag">기름 위</span>':''}${p.placed&&!p.out&&onBomb(p.x,p.y)?'<span class="tag flip">폭격 구역</span>':''}${!p.placed&&!p.out?'<span class="tag">대기</span>':''}`;
     }else{const u=p.unit;stat=`<span>${UNIT_NAME[p.kind]} ${p.size}×${p.size}</span>${u&&p.kind==='tank'?`<span>${u.cd>0?`재장전 ${u.cd}턴`:'장전 완료'}</span>`:''}${!u?'<span class="tag">대기</span>':''}`;}
-    return `<div class="prow${cur?' cur':''}${p.out?' out':''}" style="--c:${p.color}"><span class="sw"></span><div class="pn"><b>${esc(p.name)}</b><small>${p.kind==='car'?(p.ai?'AI · 자동차':'사람 · 자동차'):'사람 · '+UNIT_NAME[p.kind]}</small></div><div class="pst">${stat}</div></div>`;
+    return `<div class="prow${cur?' cur':''}${p.out?' out':''}" style="--c:${p.color}"><span class="sw"></span><div class="pn"><b>${esc(p.name)}</b><small>${p.kind==='car'?(p.ai?'AI · 자동차':'사람 · 자동차'):(p.ai?'AI · ':'사람 · ')+UNIT_NAME[p.kind]}</small></div><div class="pst">${stat}</div></div>`;
   }).join('');
   const nt=G.units.filter(u=>!u.owner&&u.type==='tank').length,na=G.units.filter(u=>!u.owner&&u.type==='apc').length;
-  $('#unitInfo').textContent=(nt||na)?`맵의 자동 전차 ${nt}대 · 장갑차 ${na}대는 모든 플레이어가 움직인 뒤에 움직여요.`:'';
+  const nh=G.units.filter(u=>!u.owner&&u.ctrl==='human').length;$('#unitInfo').textContent=(nt||na)?`맵의 공용 전차 ${nt}대 · 장갑차 ${na}대는 모든 플레이어가 움직인 뒤에 움직여요.${nh?` 그중 ${nh}대는 사람이 직접 조종해요.`:''}`:'';
   $('#turnNo').textContent=G.phase==='place'?'출발 배치':G.mode==='war'?`턴 ${G.turn}/${G.warTurns}`:`턴 ${G.turn}`;
   updatePad();
 }
@@ -1227,7 +1244,7 @@ function drawUnit(c,u,ux,uy,t,active){
   const z=S.zoom,s=u.size,x0=X(ux-.5),y0=Y(uy-.5),w=s*z,cx=x0+w/2,cy=y0+w/2,ow=u.owner?u.owner.color:null;
   c.save();
   if(u.type==='apc'){c.setLineDash([4,4]);c.strokeStyle='rgba(200,55,42,.45)';c.lineWidth=1.2;c.strokeRect(X(ux-1.5),Y(uy-1.5),(s+2)*z,(s+2)*z);c.setLineDash([]);}
-  if(active){c.strokeStyle=ow;c.lineWidth=2.5;c.globalAlpha=.55+.25*Math.sin(t/240);c.strokeRect(x0-4,y0-4,w+8,w+8);c.globalAlpha=1;}
+  if(active){c.strokeStyle=ow||C.ink;c.lineWidth=2.5;c.globalAlpha=.55+.25*Math.sin(t/240);c.strokeRect(x0-4,y0-4,w+8,w+8);c.globalAlpha=1;}
   c.translate(cx,cy);const hd=u.heading||0;c.rotate(Math.round(hd/(Math.PI/2))*(Math.PI/2));
   const h=w*.46;
   c.fillStyle='rgba(20,30,50,.22)';rr(c,-h+2,-h+3,h*2,h*2,h*.2);c.fill();
@@ -1250,6 +1267,8 @@ function drawUnit(c,u,ux,uy,t,active){
     c.fillStyle=C.apc2;c.beginPath();c.arc(0,0,h*.24,0,7);c.fill();
   }
   c.restore();
+  if(u.ctrl==='human'&&!u.owner){c.save();const bx=x0+w-2,by=y0+2,br=Math.max(5,Math.min(9,z*.4));c.fillStyle='#fff';c.strokeStyle=C.ink;c.lineWidth=1.3;c.beginPath();c.arc(bx,by,br,0,7);c.fill();c.stroke();
+    c.fillStyle=C.ink;c.beginPath();c.arc(bx,by-br*.3,br*.28,0,7);c.fill();c.beginPath();c.ellipse(bx,by+br*.42,br*.5,br*.32,0,Math.PI,0);c.fill();c.restore();}
   if(u.type==='tank'&&u.cd>0&&z*s>=14){c.save();c.font=`600 ${Math.max(9,Math.round(z*.42))}px "IBM Plex Mono", monospace`;c.textAlign='center';c.textBaseline='middle';
     c.lineWidth=3;c.strokeStyle='#fff';c.fillStyle=C.ink;const tx=cx,ty=y0-Math.max(7,z*.35);c.strokeText('장전 '+u.cd,tx,ty);c.fillText('장전 '+u.cd,tx,ty);c.restore();}
 }
@@ -1305,7 +1324,7 @@ function render(t){
       c.strokeStyle=C.ink2;c.setLineDash([2,5]);for(const f of p.knocks){c.beginPath();c.moveTo(X(f[0][0]),Y(f[0][1]));c.lineTo(X(f[1][0]),Y(f[1][1]));c.stroke();}
       c.restore();
     }
-    for(const u of G.units){let ux=u.x,uy=u.y;if(G.uanim&&G.uanim.u===u)[ux,uy]=lerpPos(G.uanim,G.uanim.k);drawUnit(c,u,ux,uy,t,cp&&cp.unit===u&&G.phase!=='over');}
+    for(const u of G.units){let ux=u.x,uy=u.y;if(G.uanim&&G.uanim.u===u)[ux,uy]=lerpPos(G.uanim,G.uanim.k);drawUnit(c,u,ux,uy,t,(G.ctrlUnit===u||(cp&&cp.unit===u))&&G.phase!=='over');}
     if(inp&&inp.type==='placeCar'&&cp){
       for(const q of G.free){const hov=S.cursor&&Math.hypot(S.cursor.x-q[0],S.cursor.y-q[1])<.55;
         c.beginPath();c.arc(X(q[0]),Y(q[1]),Math.max(4,S.zoom*.3)*(hov?1.25:1),0,7);c.fillStyle=hov?cp.color:'#fff';c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();}
@@ -1327,14 +1346,14 @@ function render(t){
         if(o.danger){c.save();c.setLineDash([3,3]);c.strokeStyle='#e8762c';c.lineWidth=2;c.beginPath();c.arc(ox,oy,r*1.7,0,7);c.stroke();c.restore();}
         c.beginPath();c.arc(ox,oy,r*(hov?1.25:1),0,7);c.fillStyle=hov?cp.color:'#fff';c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();});
     }
-    if(inp&&inp.type==='unitMove'&&cp&&cp.unit){
-      const s=cp.unit.size;
+    if(inp&&inp.type==='unitMove'&&G.ctrlUnit){
+      const s=G.ctrlUnit.size,cp={color:G.ctrlColor};
       G.uopts.forEach((o,i)=>{const hov=i===S.hover,ocx=o.x+(s-1)/2,ocy=o.y+(s-1)/2;
         if(hov){c.save();c.fillStyle='rgba(255,255,255,.35)';c.strokeStyle=cp.color;c.lineWidth=2.5;c.setLineDash([6,4]);c.fillRect(X(o.x-.5),Y(o.y-.5),s*S.zoom,s*S.zoom);c.strokeRect(X(o.x-.5),Y(o.y-.5),s*S.zoom,s*S.zoom);c.restore();}
         c.beginPath();c.arc(X(ocx),Y(ocy),Math.max(3.5,S.zoom*.22)*(hov?1.3:1),0,7);c.fillStyle=o.stay?cp.color:(hov?cp.color:'#fff');c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();});
     }
-    if(inp&&inp.type==='unitFire'&&cp&&cp.unit){
-      const u=cp.unit,k=center(u);c.save();c.strokeStyle=cp.color;c.globalAlpha=.6;c.setLineDash([6,5]);c.lineWidth=1.5;c.beginPath();c.arc(X(k.x),Y(k.y),G.tankRange*S.zoom,0,7);c.stroke();c.restore();
+    if(inp&&inp.type==='unitFire'&&G.ctrlUnit){
+      const u=G.ctrlUnit,k=center(u),cp={color:G.ctrlColor};c.save();c.strokeStyle=cp.color;c.globalAlpha=.6;c.setLineDash([6,5]);c.lineWidth=1.5;c.beginPath();c.arc(X(k.x),Y(k.y),G.tankRange*S.zoom,0,7);c.stroke();c.restore();
       G.targets.forEach((p,i)=>{const hov=i===S.hover,x=X(p.x),y=Y(p.y),r=Math.max(10,S.zoom*.8)*(hov?1.2:1);
         c.save();c.strokeStyle=C.crash;c.lineWidth=hov?3:2;c.beginPath();c.arc(x,y,r,0,7);c.moveTo(x-r*1.4,y);c.lineTo(x-r*.5,y);c.moveTo(x+r*.5,y);c.lineTo(x+r*1.4,y);c.moveTo(x,y-r*1.4);c.lineTo(x,y-r*.5);c.moveTo(x,y+r*.5);c.lineTo(x,y+r*1.4);c.stroke();
         if(hov){c.setLineDash([5,4]);c.beginPath();c.moveTo(X(k.x),Y(k.y));c.lineTo(x,y);c.stroke();}c.restore();});
@@ -1385,7 +1404,7 @@ function nearestIdx(list,g,fn,lim){let bi=-1,bd=lim;list.forEach((o,i)=>{const p
 function hoverIdx(G,g){
   const inp=G.input;if(!inp)return -1;
   if(inp.type==='move')return nearestIdx(G.opts,g,o=>[o.x,o.y],.55);
-  if(inp.type==='unitMove'){const s=G.players[G.cur].unit.size;return nearestIdx(G.uopts,g,o=>[o.x+(s-1)/2,o.y+(s-1)/2],Math.max(.6,s*.5));}
+  if(inp.type==='unitMove'){const s=G.ctrlUnit.size;return nearestIdx(G.uopts,g,o=>[o.x+(s-1)/2,o.y+(s-1)/2],Math.max(.6,s*.5));}
   if(inp.type==='unitFire')return nearestIdx(G.targets,g,p=>[p.x,p.y],.9);
   return -1;
 }
