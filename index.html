@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: control rail on the left, the graph-paper sheet fills the rest; on phones the sheet comes first */
+/* Layout: control rail on the left, a pannable graph-paper sheet on the right; on phones the sheet comes first */
 :root{
   --desk:#e8eef4;
   --sheet:#ffffff;
@@ -18,38 +18,40 @@
   --accent:#2d5fd6;
   --warn:#c8372a;
   --soft:#f2f6fa;
+  --olive:#5d6a3c;
+  --bomb:#ffab66;
   --f-display:"Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:light;
 }
-html,body{background:var(--desk);color:var(--ink)}
-body{font-family:var(--f-body);font-size:14px;line-height:1.5}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0}
+html,body{background:var(--desk);color:var(--ink)}
+body{margin:0;font-family:var(--f-body);font-size:14px;line-height:1.5}
 button,input,select{font:inherit;color:inherit}
-.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-inline:20px;padding-block:18px 10px;max-width:1800px;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-inline:20px;padding-block:18px 10px;max-width:1900px;margin:0 auto}
 .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .brand h1{font-family:var(--f-display);font-weight:400;font-size:30px;line-height:1;margin:0;letter-spacing:.01em}
 .brand h1 span{display:inline-block;background:var(--ink);color:var(--sheet);padding:2px 8px 4px;margin-right:4px;border-radius:3px}
 .brand p{margin:0;color:var(--ink-2);font-size:13px}
-.steps{display:flex;gap:4px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:4px}
+.steps{display:flex;gap:4px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:4px;flex-wrap:wrap}
 .steps button{border:0;background:transparent;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:600;color:var(--ink-2);display:flex;gap:8px;align-items:center}
 .steps button b{font-family:var(--f-mono);font-weight:500;font-size:12px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;border:1px solid currentColor}
 .steps button[aria-selected="true"]{background:var(--ink);color:var(--sheet)}
 .steps button:disabled{opacity:.4;cursor:not-allowed}
-.steps button:focus-visible,.btn:focus-visible,.tools button:focus-visible,.pad button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;padding-inline:20px;padding-block:8px 32px;max-width:1800px;margin:0 auto;align-items:start}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;padding-inline:20px;padding-block:8px 32px;max-width:1900px;margin:0 auto;align-items:start}
 .side{background:var(--sheet);border:1px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:18px;min-width:0}
 .side section{display:flex;flex-direction:column;gap:18px}
 .group{display:flex;flex-direction:column;gap:10px}
 .group+.group{border-top:1px dashed var(--rule);padding-top:16px}
 .group h3{margin:0;font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--ink-2)}
+.sub{display:flex;flex-direction:column;gap:8px}
 .hint{margin:0;font-size:12.5px;color:var(--ink-2)}
 .err{margin:0;color:var(--warn);font-weight:600;font-size:13px;min-height:1em}
-.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-2);font-weight:500}
 input[type=number],input[type=text],select{border:1px solid var(--rule);border-radius:7px;padding:6px 8px;background:var(--soft);font-size:14px;color:var(--ink);min-width:0;width:100%}
 input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -66,6 +68,10 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 .tools button i{width:14px;height:14px;border-radius:3px;flex:none;border:1px solid var(--ink)}
 .tools button[aria-pressed="true"]{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .tools button[aria-pressed="true"] i{border-color:var(--sheet)}
+.seg{display:flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--sheet);padding:6px;cursor:pointer;font-family:var(--f-mono);font-size:12.5px}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
 .slider{flex-direction:row;align-items:center;gap:10px}
 .slider input{flex:1}
 .slider output{font-family:var(--f-mono);font-size:12px;width:46px;text-align:right;color:var(--ink)}
@@ -76,11 +82,13 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 .mode b{font-size:14px}
 .mode span{font-size:12px;color:var(--ink-2);font-weight:400}
 .mode:has(input:checked){border-color:var(--ink);background:var(--soft)}
-.slot{display:grid;grid-template-columns:18px minmax(0,1fr) 92px;gap:8px;align-items:center}
+.slot{display:grid;grid-template-columns:18px minmax(0,1fr) 118px 66px;gap:6px;align-items:center}
 .slot.off input[type=text]{opacity:.45}
+.slot select:disabled{opacity:.35}
 .sw{width:16px;height:16px;border-radius:50%;background:var(--c);border:2px solid var(--ink)}
 .prow{display:grid;grid-template-columns:18px minmax(0,1fr);gap:4px 10px;align-items:center;padding:8px 10px;border:1px solid var(--rule);border-radius:9px}
 .prow.cur{border-color:var(--c);box-shadow:inset 4px 0 0 var(--c);background:var(--soft)}
+.prow.out{opacity:.5}
 .prow .pn{display:flex;align-items:baseline;gap:6px;min-width:0}
 .prow .pn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prow .pn small{color:var(--ink-2);font-size:11px}
@@ -88,6 +96,7 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .tag{font-size:11px;font-weight:600;padding:0 6px;border-radius:4px;background:var(--soft);border:1px solid var(--rule);color:var(--ink)}
 .tag.warn{background:var(--warn);color:#fff;border-color:var(--warn)}
+.tag.flip{background:var(--bomb);border-color:#d9853f}
 #plist{display:flex;flex-direction:column;gap:6px}
 .pad{display:grid;grid-template-columns:repeat(3,44px);gap:5px}
 .pad button{height:40px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet);cursor:pointer;font-size:16px;position:relative}
@@ -95,35 +104,41 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 .pad button:disabled{opacity:.3;cursor:not-allowed}
 .pad button.crash{border-color:var(--warn);color:var(--warn)}
 .padwrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-#log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;max-height:220px;overflow:auto;font-size:12.5px}
+#log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;max-height:240px;overflow:auto;font-size:12.5px}
 #log li{display:flex;gap:7px;align-items:baseline}
 #log li i{width:8px;height:8px;border-radius:50%;flex:none;background:var(--c);transform:translateY(-1px)}
 #log li.crash{color:var(--warn);font-weight:600}
 
 .stage{display:flex;flex-direction:column;gap:10px;min-width:0}
-.turnbar{display:flex;align-items:center;gap:10px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:10px 14px;min-height:46px;font-weight:600}
+.turnbar{display:flex;align-items:center;gap:10px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:8px 14px;min-height:48px;font-weight:600;flex-wrap:wrap}
 .turnbar .chip{width:18px;height:18px;border-radius:50%;background:var(--c,var(--ink-2));border:2px solid var(--ink);flex:none}
-.turnbar #turnNo{margin-left:auto;font-family:var(--f-mono);font-size:12px;color:var(--ink-2);font-weight:500;white-space:nowrap}
-.boardwrap{position:relative;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:10px;box-shadow:0 1px 0 #fff inset,0 10px 30px -18px rgba(29,41,68,.45);overflow:hidden}
+.turnbar #turnText{flex:1;min-width:0}
+.turnbar #turnNo{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);font-weight:500;white-space:nowrap}
+.boardwrap{position:relative;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:10px;box-shadow:0 10px 30px -18px rgba(29,41,68,.45)}
 .sheetlabel{display:flex;justify-content:space-between;gap:10px;font-family:var(--f-mono);font-size:11px;color:var(--ink-2);padding:0 4px 6px;flex-wrap:wrap}
-#board{display:block;max-width:100%;height:auto;margin:0 auto;touch-action:none;cursor:crosshair}
-.overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(232,238,244,.55);backdrop-filter:blur(1.5px)}
-.overlay .card{background:var(--sheet);border:2px solid var(--ink);border-radius:12px;padding:22px 26px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;max-width:min(420px,90%);box-shadow:6px 6px 0 var(--ink)}
+.holder{position:relative;border-radius:4px;overflow:hidden}
+#board{display:block;width:100%;touch-action:none;cursor:crosshair}
+.zoombar{position:absolute;right:8px;bottom:8px;display:flex;gap:4px;align-items:center;background:rgba(255,255,255,.92);border:1px solid var(--rule);border-radius:9px;padding:4px}
+.zoombar button{border:1px solid var(--rule);background:var(--sheet);border-radius:6px;min-width:32px;height:30px;cursor:pointer;font-weight:700}
+.zoombar span{font-family:var(--f-mono);font-size:11px;color:var(--ink-2);padding:0 4px;min-width:44px;text-align:center}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(232,238,244,.55);backdrop-filter:blur(1.5px);border-radius:6px}
+.overlay .card{background:var(--sheet);border:2px solid var(--ink);border-radius:12px;padding:22px 26px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;max-width:min(440px,90%);box-shadow:6px 6px 0 var(--ink)}
 .overlay h2{font-family:var(--f-display);font-weight:400;font-size:34px;margin:0;line-height:1.1;text-wrap:balance}
 .overlay p{margin:0;color:var(--ink-2)}
 .overlay .scores{display:flex;flex-direction:column;gap:4px;width:100%}
 .overlay .scores div{display:flex;justify-content:space-between;gap:16px;font-weight:600}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink-2);padding:0 4px}
 .legend span{display:flex;align-items:center;gap:6px}
-.legend i{width:16px;height:12px;border-radius:2px;border:1px solid var(--ink);display:inline-block}
+.legend i{width:16px;height:12px;border-radius:2px;border:1px solid var(--ink);display:inline-block;position:relative}
 .lg-track{background:#fff}
 .lg-off{background:repeating-linear-gradient(135deg,#e6ecf2 0 3px,#a9b6c9 3px 4px)}
 .lg-oil{background:#23212b}
+.lg-bomb{background:var(--bomb)}
 .lg-start{background:repeating-linear-gradient(90deg,var(--ink) 0 4px,#fff 4px 8px)}
 .lg-gate{background:#7a45d8;border-radius:50%!important;width:12px!important}
 .lg-flag{background:#f0611d}
-.lg-crash{background:#fff;border-color:var(--warn)!important;position:relative}
-.lg-crash::after{content:"✕";position:absolute;inset:0;display:grid;place-items:center;color:var(--warn);font-size:10px;font-weight:700}
+.lg-tank{background:var(--olive)}
+.lg-apc{background:#6a7462;border-radius:5px!important}
 
 @media (max-width:900px){
   .layout{grid-template-columns:minmax(0,1fr)}
@@ -138,7 +153,7 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 <header class="top">
   <div class="brand">
     <h1><span>모눈</span>그랑프리</h1>
-    <p>모눈종이 위 벡터 레이싱 · 최대 4명</p>
+    <p>모눈종이 위 벡터 레이싱 · 최대 4명 · 전차와 장갑차 주의</p>
   </div>
   <nav class="steps" role="tablist" aria-label="단계">
     <button role="tab" data-view="edit" aria-selected="true"><b>1</b>맵 만들기</button>
@@ -149,32 +164,35 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 
 <main class="layout">
   <aside class="side">
-    <!-- EDIT -->
     <section id="pEdit">
       <div class="group">
         <h3>모눈 크기</h3>
-        <div class="row3">
-          <label>가로 칸<input type="number" id="gCols" min="10" max="235"></label>
-          <label>세로 칸<input type="number" id="gRows" min="8" max="166"></label>
-          <label>칸 크기(px)<input type="number" id="gCell" min="6" max="40"></label>
+        <div class="row2">
+          <label>가로 칸<input type="number" id="gCols" min="10" max="600"></label>
+          <label>세로 칸<input type="number" id="gRows" min="8" max="400"></label>
         </div>
-        <p class="hint" id="gInfo"></p>
+        <p class="hint">최대 600 × 400칸. 보드는 휠이나 두 손가락으로 확대하고, 오른쪽 버튼 드래그나 이동 도구로 옮겨요.</p>
         <div class="btnrow"><button class="btn" id="gApply">모눈 적용</button></div>
       </div>
       <div class="group">
         <h3>도구</h3>
         <div class="tools" id="tools">
+          <button data-tool="hand"><i style="background:var(--soft)"></i>이동</button>
           <button data-tool="track"><i style="background:#fff"></i>트랙 붓</button>
-          <button data-tool="erase"><i class="lg-off" style="background:repeating-linear-gradient(135deg,#e6ecf2 0 3px,#a9b6c9 3px 4px)"></i>지우개 (벽)</button>
+          <button data-tool="erase"><i style="background:repeating-linear-gradient(135deg,#e6ecf2 0 3px,#a9b6c9 3px 4px)"></i>지우개 (벽)</button>
           <button data-tool="oil"><i style="background:#23212b"></i>기름</button>
           <button data-tool="oilerase"><i style="background:linear-gradient(135deg,#23212b 50%,#fff 50%)"></i>기름 지우기</button>
+          <button data-tool="bomb"><i style="background:var(--bomb)"></i>폭격 구역</button>
+          <button data-tool="bomberase"><i style="background:linear-gradient(135deg,var(--bomb) 50%,#fff 50%)"></i>폭격 지우기</button>
           <button data-tool="start"><i style="background:repeating-linear-gradient(90deg,#1d2944 0 3px,#fff 3px 6px)"></i>출발선</button>
           <button data-tool="flag"><i style="background:#f0611d"></i>깃발</button>
           <button data-tool="gate"><i style="background:#7a45d8;border-radius:50%"></i>관문</button>
+          <button data-tool="tank"><i style="background:var(--olive)"></i>전차</button>
+          <button data-tool="apc"><i style="background:#6a7462;border-radius:6px"></i>장갑차</button>
         </div>
-        <label class="slider" id="brushRow">붓 크기 <input type="range" id="brush" min="0.5" max="8" step="0.5"><output id="brushOut"></output></label>
+        <label class="slider" id="brushRow">붓 크기 <input type="range" id="brush" min="0.5" max="12" step="0.5"><output id="brushOut"></output></label>
         <p class="hint" id="toolHint"></p>
-        <div id="toolExtra" class="group" style="gap:8px"></div>
+        <div id="toolExtra" class="sub"></div>
       </div>
       <div class="group">
         <h3>맵</h3>
@@ -190,43 +208,51 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
       <button class="btn primary" data-goto="setup">게임 설정으로 →</button>
     </section>
 
-    <!-- SETUP -->
     <section id="pSetup" hidden>
       <div class="group">
         <h3>게임 유형</h3>
         <div class="modes">
-          <label class="mode"><input type="radio" name="mode" value="race" id="modeRace"><div><b>기본 레이스</b><span>출발선에서 출발해 트랙을 돌아 결승선(출발선)을 먼저 통과하면 승리</span></div></label>
-          <label class="mode"><input type="radio" name="mode" value="flag" id="modeFlag"><div><b>깃발 뺏기</b><span>깃발에 가장 먼저 멈춘 사람이 1점. 깃발이 모두 없어지면 최고 득점자 승리</span></div></label>
-          <label class="mode"><input type="radio" name="mode" value="gate" id="modeGate"><div><b>관문 통과</b><span>1번부터 마지막 관문까지 순서대로 모두 먼저 통과하면 승리</span></div></label>
+          <label class="mode"><input type="radio" name="mode" value="race"><div><b>기본 레이스</b><span>트랙을 돌아 결승선(출발선)을 먼저 통과하면 승리</span></div></label>
+          <label class="mode"><input type="radio" name="mode" value="flag"><div><b>깃발 뺏기</b><span>깃발에 가장 먼저 멈춘 사람이 1점. 깃발이 다 없어지면 최고 득점자 승리</span></div></label>
+          <label class="mode"><input type="radio" name="mode" value="gate"><div><b>관문 통과</b><span>1번부터 마지막 관문까지 순서대로 모두 먼저 통과하면 승리</span></div></label>
+          <label class="mode"><input type="radio" name="mode" value="war"><div><b>전쟁</b><span>정해진 턴까지 버티면 승리. 벽 충돌은 1턴 쉼, 포격·기관총·폭격에 맞으면 탈락</span></div></label>
         </div>
-        <div id="modeOpts" class="group" style="gap:8px;border:0;padding:0"></div>
+        <div id="modeOpts" class="sub"></div>
       </div>
       <div class="group">
         <h3>플레이어 (최대 4명 · AI 최대 3명)</h3>
         <div id="slots" style="display:flex;flex-direction:column;gap:6px"></div>
+        <p class="hint">전차·장갑차를 고르면 그 플레이어가 직접 조종해요. 자동차를 쫓아 공격하는 쪽이에요.</p>
         <label>AI 실력
-          <select id="aiLevel">
-            <option value="easy">쉬움</option>
-            <option value="normal">보통</option>
-            <option value="hard">어려움</option>
-          </select>
+          <select id="aiLevel"><option value="easy">쉬움</option><option value="normal">보통</option><option value="hard">어려움</option></select>
         </label>
       </div>
+      <div class="group">
+        <h3>전차 · 장갑차 · 폭격</h3>
+        <div class="row2">
+          <label>전차 사거리 (칸)<input type="number" id="tankRange" min="3" max="60"></label>
+          <label>전차 재장전 (턴)<input type="number" id="tankReload" min="1" max="10"></label>
+        </div>
+        <label>움직임 속도
+          <select id="animSpeed"><option value="1">보통</option><option value="0.5">빠르게</option><option value="0.2">아주 빠르게</option></select>
+        </label>
+        <p class="hint">전차: 한 칸씩 이동, 사거리 안의 차에 포탄(100% 명중). 장갑차: 세 칸까지 이동, 바로 옆을 지나거나 옆에 있는 차에 기관총 10발(한 발 10%). 맞은 차는 날아간 방향으로 벽까지 밀려나 5턴 전복. 폭격 구역에서 턴을 마치면 15% 확률로 B-2 폭격(3턴 전복).</p>
+      </div>
       <p class="err" id="setupErr"></p>
-      <button class="btn primary" id="startBtn">레이스 시작</button>
+      <button class="btn primary" id="startBtn">게임 시작</button>
     </section>
 
-    <!-- PLAY -->
     <section id="pPlay" hidden>
       <div class="group">
         <h3 id="playTitle">기본 레이스</h3>
         <div id="plist"></div>
+        <p class="hint" id="unitInfo"></p>
       </div>
       <div class="group">
         <h3>가속 방향</h3>
         <div class="padwrap">
           <div class="pad" id="pad"></div>
-          <p class="hint" style="flex:1;min-width:140px">보드의 점을 누르거나 숫자키 1–9를 써요. 가운데(5)는 속도 유지. 빨간 ✕는 충돌해서 2턴을 쉬게 되는 곳이에요.</p>
+          <p class="hint" style="flex:1;min-width:140px">보드의 점을 누르거나 숫자키 1–9. 5는 속도 유지. 빨간 ✕는 충돌, 주황 고리는 장갑차 기관총 사정권이에요.</p>
         </div>
       </div>
       <div class="group">
@@ -242,10 +268,15 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
   </aside>
 
   <div class="stage">
-    <div class="turnbar" style="--c:#56637d"><span class="chip" id="turnChip"></span><span id="turnText"></span><span id="turnNo"></span></div>
+    <div class="turnbar" style="--c:#56637d"><span class="chip"></span><span id="turnText"></span><button class="btn" id="turnAction" hidden>쏘지 않기</button><span id="turnNo"></span></div>
     <div class="boardwrap">
       <div class="sheetlabel"><span id="sheetSize"></span><span>점 = 차가 설 수 있는 자리</span></div>
-      <canvas id="board" aria-label="레이스 보드"></canvas>
+      <div class="holder" id="holder">
+        <canvas id="board" aria-label="레이스 보드"></canvas>
+        <div class="zoombar">
+          <button id="zOut" aria-label="축소">−</button><span id="zLbl"></span><button id="zIn" aria-label="확대">＋</button><button id="zFit">맞춤</button>
+        </div>
+      </div>
       <div class="overlay" id="overlay" hidden>
         <div class="card">
           <h2 id="winTitle"></h2>
@@ -262,10 +293,12 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
       <span><i class="lg-track"></i>트랙</span>
       <span><i class="lg-off"></i>벽 · 트랙 밖</span>
       <span><i class="lg-oil"></i>기름 (속도·방향 유지)</span>
+      <span><i class="lg-bomb"></i>폭격 구역</span>
       <span><i class="lg-start"></i>출발 · 결승선</span>
       <span><i class="lg-gate"></i>관문</span>
       <span><i class="lg-flag"></i>깃발</span>
-      <span><i class="lg-crash"></i>충돌 (2턴 쉼)</span>
+      <span><i class="lg-tank"></i>전차</span>
+      <span><i class="lg-apc"></i>장갑차</span>
     </div>
   </div>
 </main>
@@ -274,130 +307,179 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 (()=>{
 'use strict';
 const $=s=>document.querySelector(s);
-const M=4, PAD=20, VMAX=15;
-const C={off:'#e6ecf2',hatch:'rgba(70,92,128,.32)',track:'#ffffff',ink:'#1d2944',ink2:'#56637d',oil:'#23212b',grid:'rgba(86,140,186,.26)',grid5:'rgba(62,118,166,.55)',gate:'#7a45d8',flag:'#f0611d',crash:'#c8372a'};
+const M=4, VMAX=15, MAXC=600, MAXR=400;
+const C={desk:'#d9e1ea',off:'#e6ecf2',hatch:'rgba(70,92,128,.30)',track:'#ffffff',ink:'#1d2944',ink2:'#56637d',oil:'#23212b',bomb:'#ffab66',
+  grid:'rgba(86,140,186,.26)',grid5:'rgba(62,118,166,.55)',gate:'#7a45d8',flag:'#f0611d',crash:'#c8372a',
+  olive:'#5d6a3c',olive2:'#3c4624',apc:'#6a7462',apc2:'#41483d',tracer:'#ffcf2e'};
 const PL=[{c:'#e0453a',n:'빨강'},{c:'#2d6cdf',n:'파랑'},{c:'#169a55',n:'초록'},{c:'#e2a10b',n:'노랑'}];
 const ACC=[[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]];
 const PADKEY=['7','8','9','4','5','6','1','2','3'];
 const ARROW=['↖','↑','↗','←','•','→','↙','↓','↘'];
 const NB8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
 const AI_LV={easy:{limit:1500,w:2.6,noise:.25},normal:{limit:40000,w:1.5,noise:0},hard:{limit:180000,w:1.15,noise:0}};
-const TOOL_HINT={
-  track:'드래그해서 차가 달릴 수 있는 길을 칠해요.',
-  erase:'트랙을 지워 벽을 만들어요. 붓을 작게 하면 트랙 안에 가는 벽을 그을 수 있어요.',
-  oil:'기름 위에 선 차는 가속·제동·방향 전환을 못 하고, 지난 턴과 똑같은 속도와 방향으로 미끄러져요.',
-  oilerase:'칠한 기름을 닦아내요.',
-  start:'점에서 점으로 드래그해 출발선(=결승선)을 그어요. 비스듬히 그어도 돼요. 화살표가 달리는 방향이에요.',
-  flag:'모눈 점을 눌러 깃발을 놓거나 치워요. 트랙 위에만 놓을 수 있어요.',
-  gate:'드래그해서 관문을 1번부터 순서대로 그어요. 이미 있는 관문을 짧게 누르면 지워져요.'
+const TOOLS={
+  hand:{n:'이동',h:'드래그해서 보드를 옮겨요. 휠이나 두 손가락으로 확대·축소해요.'},
+  track:{n:'트랙 붓',h:'드래그해서 차가 달릴 수 있는 길을 칠해요.'},
+  erase:{n:'지우개',h:'트랙을 지워 벽을 만들어요. 붓을 작게 하면 트랙 안에 가는 벽을 그을 수 있어요.'},
+  oil:{n:'기름',h:'기름 위에 선 차는 가속·제동·방향 전환을 못 하고, 지난 턴과 똑같은 속도와 방향으로 미끄러져요.'},
+  oilerase:{n:'기름 지우기',h:'칠한 기름을 닦아내요.'},
+  bomb:{n:'폭격 구역',h:'연주황 구역이에요. 차가 여기서 턴을 마치면 15% 확률로 B-2가 폭격해 3턴 동안 전복돼요.'},
+  bomberase:{n:'폭격 지우기',h:'칠한 폭격 구역을 지워요.'},
+  start:{n:'출발선',h:'점에서 점으로 드래그해 출발선(=결승선)을 그어요. 비스듬히 그어도 돼요. 화살표가 달리는 방향이에요.'},
+  flag:{n:'깃발',h:'모눈 점을 눌러 깃발을 놓거나 치워요. 트랙 위에만 놓을 수 있어요.'},
+  gate:{n:'관문',h:'드래그해서 관문을 1번부터 순서대로 그어요. 이미 있는 관문을 짧게 누르면 지워져요.'},
+  tank:{n:'전차',h:'누른 곳에 전차를 놓아요. 몇 대든 놓을 수 있고, 다시 누르면 치워져요. 가장 가까운 차를 쫓아 한 칸씩 움직이며 포탄을 쏴요.'},
+  apc:{n:'장갑차',h:'누른 곳에 장갑차를 놓아요. 몇 대든 놓을 수 있고, 다시 누르면 치워져요. 가장 가까운 차를 쫓아 세 칸까지 움직이며 바로 옆 차에 기관총을 쏴요.'}
 };
-const MODE_NAME={race:'기본 레이스',flag:'깃발 뺏기',gate:'관문 통과'};
+const BRUSH_K={track:'t',erase:'te',oil:'o',oilerase:'oe',bomb:'b',bomberase:'be'};
+const MODE_NAME={race:'기본 레이스',flag:'깃발 뺏기',gate:'관문 통과',war:'전쟁'};
+const UNIT_NAME={tank:'전차',apc:'장갑차'};
 
-const S={map:null,cell:18,tool:'track',brush:3,view:'edit',undo:[],drag:null,cursor:null,hover:-1,G:null,cq:false,
-  setup:{mode:'race',laps:1,stopRule:'land',flagCount:5,ai:'normal',slots:[{type:'human',name:''},{type:'ai',name:''},{type:'none',name:''},{type:'none',name:''}]}};
+const S={map:null,zoom:16,camX:0,camY:0,tool:'track',brush:3,unitSize:2,view:'edit',undo:[],drag:null,cursor:null,hover:-1,G:null,cq:false,
+  setup:{mode:'race',laps:1,stopRule:'land',flagCount:5,ai:'normal',warTurns:15,tankRange:10,tankReload:2,anim:1,
+    slots:[{type:'human',name:'',size:2},{type:'ai',name:'',size:2},{type:'none',name:'',size:2},{type:'none',name:'',size:2}]}};
 
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtN=n=>n>0?'+'+n:n<0?'−'+(-n):'0';
 const fmtV=(x,y)=>`(${fmtN(x)}, ${fmtN(y)})`;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 /* ---------- default map ---------- */
 function defaultMap(){
   const loop=[[12,7],[30,7],[36,12],[44,7],[50,8],[53,13],[53,30],[48,34],[36,34],[30,28],[24,34],[12,34],[7,29],[7,12],[12,7]];
   return {cols:60,rows:40,
-    strokes:[{k:'t',r:3.3,pts:loop},{k:'o',r:1.7,pts:[[18,34]]},{k:'o',r:1.3,pts:[[52,18],[53,20]]}],
+    strokes:[{k:'t',r:3.3,pts:loop},{k:'o',r:1.7,pts:[[18,34]]},{k:'o',r:1.3,pts:[[52,18],[53,20]]},{k:'b',r:2.6,pts:[[40,8.5],[46,8]]}],
     start:{a:[3,20],b:[11,20],dir:-1},
     flags:[[30,7],[53,26],[42,34],[16,31],[36,12]],
-    gates:[{a:[24,3],b:[24,11]},{a:[49,22],b:[57,22]},{a:[42,30],b:[42,38]}]};
+    gates:[{a:[24,3],b:[24,11]},{a:[49,22],b:[57,22]},{a:[42,30],b:[42,38]}],
+    units:[{type:'tank',x:47,y:32,size:2},{type:'apc',x:30,y:31,size:1}]};
 }
+function normMap(m){m.strokes=m.strokes||[];m.flags=m.flags||[];m.gates=m.gates||[];m.units=m.units||[];if(m.start===undefined)m.start=null;return m;}
 
-/* ---------- layers ---------- */
-const board=$('#board'), bctx=board.getContext('2d');
-let CW=0,CH=0,DPR=1,hatch=null;
+/* ---------- view (camera) ---------- */
+const board=$('#board'),bctx=board.getContext('2d'),holder=$('#holder');
+let VW=800,VH=560,DPR=1,hatch=null;
 const L={};
 function mk(w,h,read){const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(w));cv.height=Math.max(1,Math.round(h));return {cv,ctx:cv.getContext('2d',read?{willReadFrequently:true}:undefined)};}
-const X=x=>PAD+x*S.cell, Y=y=>PAD+y*S.cell;
-function allocLayers(){
-  const m=S.map; CW=m.cols*S.cell+PAD*2; CH=m.rows*S.cell+PAD*2;
-  const raw=window.devicePixelRatio||1;
-  DPR=Math.max(.7,Math.min(raw,2,Math.sqrt(3.5e6/(CW*CH))));
-  board.width=Math.round(CW*DPR); board.height=Math.round(CH*DPR); board.style.width=CW+'px';
-  for(const k of ['track','ink','oil','tmp','cache']){L[k]=mk(CW*DPR,CH*DPR);L[k].ctx.setTransform(DPR,0,0,DPR,0,0);}
-  for(const k of ['tmask','omask']) L[k]=mk(m.cols*M+1,m.rows*M+1,true);
+const X=x=>S.camX+x*S.zoom, Y=y=>S.camY+y*S.zoom;
+function resizeBoard(){
+  const w=Math.max(260,Math.floor(holder.clientWidth)),h=Math.round(clamp(window.innerHeight*.72,320,1100));
+  if(w===VW&&h===VH&&L.cache)return;
+  const first=!L.cache;VW=w;VH=h;DPR=Math.min(window.devicePixelRatio||1,2);
+  board.width=Math.round(VW*DPR);board.height=Math.round(VH*DPR);board.style.height=VH+'px';
+  for(const k of ['track','ink','oil','bomb','tmp','cache']){L[k]=mk(VW*DPR,VH*DPR);L[k].ctx.setTransform(DPR,0,0,DPR,0,0);}
   const p=document.createElement('canvas');p.width=p.height=8;const pc=p.getContext('2d');
   pc.strokeStyle=C.hatch;pc.lineWidth=1.1;pc.beginPath();pc.moveTo(0,8);pc.lineTo(8,0);pc.moveTo(-2,2);pc.lineTo(2,-2);pc.moveTo(6,10);pc.lineTo(10,6);pc.stroke();
   hatch=L.cache.ctx.createPattern(p,'repeat');
-  $('#sheetSize').textContent=`SHEET ${m.cols}×${m.rows} 칸 · ${S.cell}px · ${m.cols*S.cell}×${m.rows*S.cell}px`;
+  if(first)fitView();else compose();
 }
-function strokeCtx(ctx,scale,off,color,comp,r,a,b){
-  ctx.save();ctx.globalCompositeOperation=comp;ctx.strokeStyle=color;ctx.fillStyle=color;
-  ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=r*2*scale;
-  const ax=off+a[0]*scale, ay=off+a[1]*scale;
-  ctx.beginPath();
-  if(!b||(a[0]===b[0]&&a[1]===b[1])){ctx.arc(ax,ay,r*scale,0,Math.PI*2);ctx.fill();}
-  else{ctx.moveTo(ax,ay);ctx.lineTo(off+b[0]*scale,off+b[1]*scale);ctx.stroke();}
+function fitView(){
+  const m=S.map;S.zoom=clamp(Math.min((VW-40)/m.cols,(VH-40)/m.rows),1,48);
+  S.camX=(VW-m.cols*S.zoom)/2;S.camY=(VH-m.rows*S.zoom)/2;compose();
+}
+function zoomAt(f,sx,sy){
+  const z=clamp(S.zoom*f,1,60);const gx=(sx-S.camX)/S.zoom,gy=(sy-S.camY)/S.zoom;
+  S.zoom=z;S.camX=sx-gx*z;S.camY=sy-gy*z;schedCompose();
+}
+function centerOn(x,y){S.camX=VW/2-x*S.zoom;S.camY=VH/2-y*S.zoom;schedCompose();}
+function ensureVisible(x,y){const sx=X(x),sy=Y(y),m=60;if(sx<m||sy<m||sx>VW-m||sy>VH-m)centerOn(x,y);}
+
+/* ---------- stroke drawing ---------- */
+const BB=new WeakMap();
+function bbox(st){let b=BB.get(st);if(!b){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const p of st.pts){x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1]);}b=[x0-st.r,y0-st.r,x1+st.r,y1+st.r];BB.set(st,b);}return b;}
+function drawStroke(ctx,st,scale,ox,oy,color){
+  ctx.globalCompositeOperation=st.k.length===2?'destination-out':'source-over';
+  ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=st.r*2*scale;ctx.lineCap='round';ctx.lineJoin='round';
+  const p=st.pts;ctx.beginPath();
+  if(p.length===1){ctx.arc(ox+p[0][0]*scale,oy+p[0][1]*scale,st.r*scale,0,Math.PI*2);ctx.fill();return;}
+  ctx.moveTo(ox+p[0][0]*scale,oy+p[0][1]*scale);for(let i=1;i<p.length;i++)ctx.lineTo(ox+p[i][0]*scale,oy+p[i][1]*scale);ctx.stroke();
+}
+function strokeSeg(ctx,scale,color,comp,r,a,b){
+  ctx.save();ctx.globalCompositeOperation=comp;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=r*2*scale;ctx.beginPath();
+  if(!b||(a[0]===b[0]&&a[1]===b[1])){ctx.arc(a[0]*scale,a[1]*scale,r*scale,0,Math.PI*2);ctx.fill();}
+  else{ctx.moveTo(a[0]*scale,a[1]*scale);ctx.lineTo(b[0]*scale,b[1]*scale);ctx.stroke();}
   ctx.restore();
 }
-function paintSeg(st,a,b){
-  const comp=(st.k==='te'||st.k==='oe')?'destination-out':'source-over';
-  if(st.k==='t'||st.k==='te'){
-    strokeCtx(L.track.ctx,S.cell,PAD,C.track,comp,st.r,a,b);
-    strokeCtx(L.ink.ctx,S.cell,PAD,C.ink,comp,st.r,a,b);
-    strokeCtx(L.tmask.ctx,M,0,'#fff',comp,st.r,a,b);
-  }else{
-    strokeCtx(L.oil.ctx,S.cell,PAD,C.oil,comp,st.r,a,b);
-    strokeCtx(L.omask.ctx,M,0,'#fff',comp,st.r,a,b);
-  }
+function maskFor(k){return k[0]==='t'?L.tmask:k[0]==='o'?L.omask:L.bmask;}
+function allocMasks(){const m=S.map;for(const k of ['tmask','omask','bmask'])L[k]=mk(m.cols*M+1,m.rows*M+1,true);}
+function rebuildMasks(){
+  for(const k of ['tmask','omask','bmask'])L[k].ctx.clearRect(0,0,L[k].cv.width,L[k].cv.height);
+  for(const st of S.map.strokes){const c=maskFor(st.k).ctx;c.save();drawStroke(c,st,M,0,0,'#fff');c.restore();}
 }
-function rebuildLayers(){
-  for(const k of ['track','ink','oil']) L[k].ctx.clearRect(0,0,CW,CH);
-  for(const k of ['tmask','omask']) L[k].ctx.clearRect(0,0,L[k].cv.width,L[k].cv.height);
-  for(const st of S.map.strokes){const p=st.pts;if(p.length===1)paintSeg(st,p[0],null);else for(let i=1;i<p.length;i++)paintSeg(st,p[i-1],p[i]);}
-  compose();
+function paintMaskSeg(st,a,b){strokeSeg(maskFor(st.k).ctx,M,'#fff',st.k.length===2?'destination-out':'source-over',st.r,a,b);}
+function paintView(layer,kind,color){
+  const ctx=layer.ctx;ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,VW,VH);
+  const gx0=(-S.camX)/S.zoom,gy0=(-S.camY)/S.zoom,gx1=(VW-S.camX)/S.zoom,gy1=(VH-S.camY)/S.zoom;
+  for(const st of S.map.strokes){if(st.k[0]!==kind)continue;const b=bbox(st);if(b[2]<gx0||b[0]>gx1||b[3]<gy0||b[1]>gy1)continue;drawStroke(ctx,st,S.zoom,S.camX,S.camY,color);}
+  ctx.restore();
 }
 function compose(){
-  const c=L.cache.ctx;c.clearRect(0,0,CW,CH);
-  c.fillStyle=C.off;c.fillRect(0,0,CW,CH);
-  c.save();c.setTransform(1,0,0,1,0,0);c.fillStyle=hatch;c.fillRect(0,0,L.cache.cv.width,L.cache.cv.height);c.restore();
-  const o=Math.max(1.2,S.cell*.09),d=o*.7;
-  for(const [dx,dy] of [[o,0],[-o,0],[0,o],[0,-o],[d,d],[-d,d],[d,-d],[-d,-d]]) c.drawImage(L.ink.cv,dx,dy,CW,CH);
-  c.drawImage(L.track.cv,0,0,CW,CH);
-  const t=L.tmp.ctx;t.save();t.setTransform(1,0,0,1,0,0);t.globalCompositeOperation='source-over';t.clearRect(0,0,L.tmp.cv.width,L.tmp.cv.height);
-  t.drawImage(L.oil.cv,0,0);t.globalCompositeOperation='destination-in';t.drawImage(L.track.cv,0,0);t.restore();
-  c.globalAlpha=.88;c.drawImage(L.tmp.cv,0,0,CW,CH);c.globalAlpha=1;
+  if(!L.cache||!S.map)return;
+  const c=L.cache.ctx,m=S.map,z=S.zoom;
+  c.save();c.setTransform(DPR,0,0,DPR,0,0);c.globalCompositeOperation='source-over';c.globalAlpha=1;
+  c.clearRect(0,0,VW,VH);c.fillStyle=C.desk;c.fillRect(0,0,VW,VH);
+  c.beginPath();c.rect(X(0),Y(0),m.cols*z,m.rows*z);c.clip();
+  c.fillStyle=C.off;c.fillRect(X(0),Y(0),m.cols*z,m.rows*z);
+  if(hatch.setTransform)hatch.setTransform(new DOMMatrix().translateSelf(S.camX,S.camY));
+  c.fillStyle=hatch;c.fillRect(X(0),Y(0),m.cols*z,m.rows*z);
+  paintView(L.track,'t',C.track);paintView(L.ink,'t',C.ink);
+  const o=clamp(z*.09,1,2.2),d=o*.7;
+  for(const[dx,dy]of[[o,0],[-o,0],[0,o],[0,-o],[d,d],[-d,d],[d,-d],[-d,-d]])c.drawImage(L.ink.cv,dx,dy,VW,VH);
+  c.drawImage(L.track.cv,0,0,VW,VH);
+  for(const[kind,color,alpha]of[['o',C.oil,.88],['b',C.bomb,.62]]){
+    paintView(L[kind==='o'?'oil':'bomb'],kind,color);
+    const t=L.tmp.ctx;t.save();t.setTransform(1,0,0,1,0,0);t.globalCompositeOperation='source-over';t.clearRect(0,0,L.tmp.cv.width,L.tmp.cv.height);
+    t.drawImage(L[kind==='o'?'oil':'bomb'].cv,0,0);t.globalCompositeOperation='destination-in';t.drawImage(L.track.cv,0,0);t.restore();
+    c.globalAlpha=alpha;c.drawImage(L.tmp.cv,0,0,VW,VH);c.globalAlpha=1;
+  }
   drawGrid(c);
+  c.restore();
+  c.save();c.setTransform(DPR,0,0,DPR,0,0);c.strokeStyle=C.ink;c.lineWidth=1.4;c.strokeRect(X(0),Y(0),m.cols*z,m.rows*z);drawLabels(c);c.restore();
+  $('#zLbl').textContent=Math.round(z*10)/10+'px';
 }
 function schedCompose(){if(S.cq)return;S.cq=true;requestAnimationFrame(()=>{S.cq=false;compose();});}
 function drawGrid(c){
-  const m=S.map,cs=S.cell;c.save();
-  c.strokeStyle=C.grid;c.lineWidth=cs<10?.6:.9;c.beginPath();
-  for(let i=0;i<=m.cols;i++)if(i%5){c.moveTo(X(i),Y(0));c.lineTo(X(i),Y(m.rows));}
-  for(let j=0;j<=m.rows;j++)if(j%5){c.moveTo(X(0),Y(j));c.lineTo(X(m.cols),Y(j));}
+  const m=S.map,z=S.zoom;
+  const i0=Math.max(0,Math.floor(-S.camX/z)),i1=Math.min(m.cols,Math.ceil((VW-S.camX)/z));
+  const j0=Math.max(0,Math.floor(-S.camY/z)),j1=Math.min(m.rows,Math.ceil((VH-S.camY)/z));
+  if(z>=5){c.strokeStyle=C.grid;c.lineWidth=z<10?.6:.9;c.beginPath();
+    for(let i=i0;i<=i1;i++)if(i%5){c.moveTo(X(i),Y(j0));c.lineTo(X(i),Y(j1));}
+    for(let j=j0;j<=j1;j++)if(j%5){c.moveTo(X(i0),Y(j));c.lineTo(X(i1),Y(j));}
+    c.stroke();}
+  let st=5;while(st*z<7)st*=2;
+  c.strokeStyle=C.grid5;c.lineWidth=1.1;c.beginPath();
+  for(let i=Math.ceil(i0/st)*st;i<=i1;i+=st){c.moveTo(X(i),Y(j0));c.lineTo(X(i),Y(j1));}
+  for(let j=Math.ceil(j0/st)*st;j<=j1;j+=st){c.moveTo(X(i0),Y(j));c.lineTo(X(i1),Y(j));}
   c.stroke();
-  c.strokeStyle=C.grid5;c.lineWidth=1.2;c.beginPath();
-  for(let i=0;i<=m.cols;i+=5){c.moveTo(X(i),Y(0));c.lineTo(X(i),Y(m.rows));}
-  for(let j=0;j<=m.rows;j+=5){c.moveTo(X(0),Y(j));c.lineTo(X(m.cols),Y(j));}
-  c.stroke();
-  c.strokeStyle=C.ink;c.lineWidth=1.4;c.strokeRect(X(0),Y(0),m.cols*cs,m.rows*cs);
-  c.fillStyle=C.ink2;c.font='500 9px "IBM Plex Mono", monospace';c.textAlign='center';c.textBaseline='middle';
-  const step=cs<10?20:10;
-  for(let i=0;i<=m.cols;i+=step)c.fillText(i,X(i),PAD/2);
-  c.textAlign='right';for(let j=step;j<=m.rows;j+=step)c.fillText(j,PAD-4,Y(j));
-  c.restore();
+}
+function drawLabels(c){
+  const m=S.map,z=S.zoom;let st=5;while(st*z<42)st*=2;
+  c.font='500 10px "IBM Plex Mono", monospace';c.textBaseline='middle';c.lineWidth=3;c.strokeStyle='rgba(255,255,255,.9)';c.fillStyle=C.ink2;
+  c.textAlign='center';
+  for(let i=0;i<=m.cols;i+=st){const x=X(i);if(x<14||x>VW-14)continue;const y=clamp(Y(0)-9,9,VH-9);c.strokeText(i,x,y);c.fillText(i,x,y);}
+  c.textAlign='left';
+  for(let j=st;j<=m.rows;j+=st){const y=Y(j);if(y<14||y>VH-14)continue;const x=clamp(X(0)-24,3,VW-30);c.strokeText(j,x,y);c.fillText(j,x,y);}
 }
 
 /* ---------- masks & geometry ---------- */
-let MASK=null,OILM=null,PT=null,MW=0,MH=0;
+let MASK=null,OILM=null,BOMBM=null,PT=null,MW=0,MH=0,VAL={};
 function buildMasks(){
   MW=S.map.cols*M+1;MH=S.map.rows*M+1;
-  const a=L.tmask.ctx.getImageData(0,0,MW,MH).data,b=L.omask.ctx.getImageData(0,0,MW,MH).data;
-  MASK=new Uint8Array(MW*MH);OILM=new Uint8Array(MW*MH);
-  for(let i=0;i<MW*MH;i++){MASK[i]=a[i*4+3]>127?1:0;OILM[i]=(b[i*4+3]>127&&MASK[i])?1:0;}
+  const a=L.tmask.ctx.getImageData(0,0,MW,MH).data,b=L.omask.ctx.getImageData(0,0,MW,MH).data,c=L.bmask.ctx.getImageData(0,0,MW,MH).data;
+  MASK=new Uint8Array(MW*MH);OILM=new Uint8Array(MW*MH);BOMBM=new Uint8Array(MW*MH);
+  for(let i=0;i<MW*MH;i++){MASK[i]=a[i*4+3]>127?1:0;OILM[i]=(b[i*4+3]>127&&MASK[i])?1:0;BOMBM[i]=(c[i*4+3]>127&&MASK[i])?1:0;}
   const NW=S.map.cols+1,NH=S.map.rows+1;PT=new Uint8Array(NW*NH);
   for(let y=0;y<NH;y++)for(let x=0;x<NW;x++)PT[y*NW+x]=onT(x,y);
+  for(const s of [1,2,3]){const V=new Uint8Array(NW*NH);
+    for(let y=0;y+s-1<NH;y++)for(let x=0;x+s-1<NW;x++){let ok=1;for(let dy=0;dy<s&&ok;dy++)for(let dx=0;dx<s;dx++)if(!PT[(y+dy)*NW+x+dx]){ok=0;break;}V[y*NW+x]=ok;}
+    VAL[s]=V;}
 }
-function onT(x,y){const i=Math.round(x*M),j=Math.round(y*M);if(i<0||j<0||i>=MW||j>=MH)return 0;return MASK[j*MW+i];}
-function onOil(x,y){const i=Math.round(x*M),j=Math.round(y*M);if(i<0||j<0||i>=MW||j>=MH)return 0;return OILM[j*MW+i];}
+function mIdx(x,y){const i=Math.round(x*M),j=Math.round(y*M);if(i<0||j<0||i>=MW||j>=MH)return -1;return j*MW+i;}
+function onT(x,y){const k=mIdx(x,y);return k<0?0:MASK[k];}
+function onOil(x,y){const k=mIdx(x,y);return k<0?0:OILM[k];}
+function onBomb(x,y){const k=mIdx(x,y);return k<0?0:BOMBM[k];}
+function ptOK(x,y){return x>=0&&y>=0&&x<=S.map.cols&&y<=S.map.rows&&PT[y*(S.map.cols+1)+x];}
 const oilLock=(x,y,vx,vy)=>(vx||vy)&&onOil(x,y);
 function segCheck(x0,y0,x1,y1){
   const dx=x1-x0,dy=y1-y0,n=Math.max(1,Math.ceil(Math.hypot(dx,dy)*M*1.5));
@@ -407,6 +489,7 @@ function segCheck(x0,y0,x1,y1){
 function maskAtPoint(x,y){const d=L.tmask.ctx.getImageData(Math.round(x*M),Math.round(y*M),1,1).data;return d[3]>127;}
 function sideOf(st,x,y){const[ax,ay]=st.a,[bx,by]=st.b;return st.dir*((bx-ax)*(y-ay)-(by-ay)*(x-ax));}
 function crossDelta(st,x0,y0,x1,y1){
+  if(!st)return 0;
   const s0=sideOf(st,x0,y0),s1=sideOf(st,x1,y1);let d;
   if(s0<=0&&s1>0)d=1;else if(s0>0&&s1<=0)d=-1;else return 0;
   const u=s0/(s0-s1),px=x0+(x1-x0)*u,py=y0+(y1-y0)*u;
@@ -426,14 +509,26 @@ function segInter(px,py,qx,qy,g){
   if(o4===0&&onSeg(px,py,qx,qy,bx,by))return true;
   return false;
 }
-function distPtSeg(px,py,a,b){const ex=b[0]-a[0],ey=b[1]-a[1],l2=ex*ex+ey*ey;let t=l2?((px-a[0])*ex+(py-a[1])*ey)/l2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-a[0]-ex*t,py-a[1]-ey*t);}
-function startCandidates(){
+function segBox(x0,y0,x1,y1,bx0,by0,bx1,by1){
+  let t0=0,t1=1;const dx=x1-x0,dy=y1-y0;
+  for(const[p,q,lo,hi]of[[dx,x0,bx0,bx1],[dy,y0,by0,by1]]){
+    if(Math.abs(p)<1e-12){if(q<lo||q>hi)return null;}
+    else{let a=(lo-q)/p,b=(hi-q)/p;if(a>b){const t=a;a=b;b=t;}t0=Math.max(t0,a);t1=Math.min(t1,b);if(t0>t1)return null;}
+  }
+  return[t0,t1];
+}
+function distPtSeg(px,py,a,b){const ex=b[0]-a[0],ey=b[1]-a[1],l2=ex*ex+ey*ey;let t=l2?((px-a[0])*ex+(py-a[1])*ey)/l2:0;t=clamp(t,0,1);return Math.hypot(px-a[0]-ex*t,py-a[1]-ey*t);}
+const center=u=>({x:u.x+(u.size-1)/2,y:u.y+(u.size-1)/2});
+const inFoot=(u,x,y)=>x>=u.x&&x<=u.x+u.size-1&&y>=u.y&&y<=u.y+u.size-1;
+const boxOverlap=(a,b)=>a.x<=b.x+b.size-1&&b.x<=a.x+a.size-1&&a.y<=b.y+b.size-1&&b.y<=a.y+a.size-1;
+const adjacent=(u,x,y)=>x>=u.x-1&&x<=u.x+u.size&&y>=u.y-1&&y<=u.y+u.size;
+function startCandidates(units){
   const st=S.map.start,[ax,ay]=st.a,[bx,by]=st.b,ex=bx-ax,ey=by-ay,l2=ex*ex+ey*ey,ln=Math.sqrt(l2),out=[];
   for(let x=Math.max(0,Math.min(ax,bx)-1);x<=Math.min(S.map.cols,Math.max(ax,bx)+1);x++)
     for(let y=Math.max(0,Math.min(ay,by)-1);y<=Math.min(S.map.rows,Math.max(ay,by)+1);y++){
       const t=((x-ax)*ex+(y-ay)*ey)/l2;if(t<0||t>1)continue;
       const d=Math.abs(ex*(y-ay)-ey*(x-ax))/ln;
-      if(d<=.5+1e-9&&onT(x,y))out.push([x,y]);
+      if(d<=.5+1e-9&&onT(x,y)&&!units.some(u=>inFoot(u,x,y)))out.push([x,y]);
     }
   return out;
 }
@@ -444,7 +539,8 @@ function bfs(seeds,block){
   for(const[i,d]of seeds)if(D[i]<0){D[i]=d;q[t++]=i;}
   while(h<t){const i=q[h++],x=i%NW,y=(i/NW)|0;
     for(const[dx,dy]of NB8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=NW||ny>=NH)continue;const j=ny*NW+nx;
-      if(D[j]>=0||!PT[j])continue;if(segCheck(x,y,nx,ny)>=0)continue;if(block&&block(x,y,nx,ny))continue;D[j]=D[i]+1;q[t++]=j;}}
+      if(D[j]>=0||!PT[j])continue;if(dx&&dy&&segCheck(x,y,nx,ny)>=0)continue;if(!dx||!dy){if(!onT(x+dx*.5,y+dy*.5))continue;}
+      if(block&&block(x,y,nx,ny))continue;D[j]=D[i]+1;q[t++]=j;}}
   return D;
 }
 function raceField(){
@@ -461,8 +557,10 @@ function raceField(){
 }
 function gateFields(gates){
   const NW=S.map.cols+1,NH=S.map.rows+1,DG=[],SD=[];
-  for(const g of gates){let seeds=[];
-    for(let y=0;y<NH;y++)for(let x=0;x<NW;x++){const i=y*NW+x;if(PT[i]&&distPtSeg(x,y,g.a,g.b)<=.75)seeds.push(i);}
+  for(const g of gates){const seeds=[];
+    const x0=Math.max(0,Math.floor(Math.min(g.a[0],g.b[0])-1)),x1=Math.min(NW-1,Math.ceil(Math.max(g.a[0],g.b[0])+1));
+    const y0=Math.max(0,Math.floor(Math.min(g.a[1],g.b[1])-1)),y1=Math.min(NH-1,Math.ceil(Math.max(g.a[1],g.b[1])+1));
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=y*NW+x;if(PT[i]&&distPtSeg(x,y,g.a,g.b)<=.75)seeds.push(i);}
     SD.push(seeds);DG.push(bfs(seeds.map(i=>[i,0]),null));}
   const n=gates.length,REM=new Array(n+1).fill(0);
   for(let k=n-2;k>=0;k--){let m=Infinity;for(const i of SD[k])if(DG[k+1][i]>=0)m=Math.min(m,DG[k+1][i]);REM[k]=(isFinite(m)?m:999)+REM[k+1];}
@@ -476,86 +574,92 @@ function flagField(G){
 /* ---------- map editing ---------- */
 function snapshot(){return JSON.stringify(S.map);}
 function pushUndo(){S.undo.push(snapshot());if(S.undo.length>60)S.undo.shift();}
-function autosave(){store.set('mg-auto',JSON.stringify({map:S.map,cell:S.cell}));}
-function setMap(m,cell){
-  const resize=!S.map||m.cols!==S.map.cols||m.rows!==S.map.rows||(cell&&cell!==S.cell);
-  S.map=m;if(cell)S.cell=cell;
-  if(resize)allocLayers();
-  rebuildLayers();syncGridInputs();renderToolExtra();renderModeOpts();
+function autosave(){store.set('mg-auto',JSON.stringify({map:S.map}));}
+function setMap(m){
+  const resize=!S.map||m.cols!==S.map.cols||m.rows!==S.map.rows;
+  S.map=normMap(m);allocMasks();rebuildMasks();
+  if(resize&&L.cache)fitView();else schedCompose();
+  syncGridInputs();renderToolExtra();renderModeOpts();
 }
-function syncGridInputs(){
-  $('#gCols').value=S.map.cols;$('#gRows').value=S.map.rows;$('#gCell').value=S.cell;updateGridInfo();
-}
-function updateGridInfo(){
-  const c=+$('#gCols').value||0,r=+$('#gRows').value||0,s=+$('#gCell').value||0,ok=c*s<=1414&&r*s<=1000;
-  $('#gInfo').innerHTML=`${c*s} × ${r*s} px <span style="color:${ok?'inherit':'var(--warn)'}">· 최대 1414 × 1000</span>`;
-}
+function syncGridInputs(){$('#gCols').value=S.map.cols;$('#gRows').value=S.map.rows;$('#sheetSize').textContent=`SHEET ${S.map.cols}×${S.map.rows} 칸`;}
 function applyGrid(){
-  let s=Math.max(6,Math.min(40,Math.round(+$('#gCell').value||18)));
-  let c=Math.max(10,Math.min(Math.floor(1414/s),Math.round(+$('#gCols').value||60)));
-  let r=Math.max(8,Math.min(Math.floor(1000/s),Math.round(+$('#gRows').value||40)));
-  pushUndo();
-  const m=JSON.parse(snapshot());m.cols=c;m.rows=r;
-  m.flags=m.flags.filter(f=>f[0]<=c&&f[1]<=r);
-  setMap(m,s);autosave();
-  $('#mStatus').textContent=`모눈을 ${c}×${r}칸, 칸당 ${s}px로 바꿨어요.`;
+  const c=clamp(Math.round(+$('#gCols').value||60),10,MAXC),r=clamp(Math.round(+$('#gRows').value||40),8,MAXR);
+  pushUndo();const m=JSON.parse(snapshot());m.cols=c;m.rows=r;
+  m.flags=m.flags.filter(f=>f[0]<=c&&f[1]<=r);m.units=m.units.filter(u=>u.x+u.size-1<=c&&u.y+u.size-1<=r);
+  setMap(m);autosave();$('#mStatus').textContent=`모눈을 ${c}×${r}칸으로 바꿨어요.`;
 }
-function toGrid(e){const r=board.getBoundingClientRect(),sx=CW/r.width,sy=CH/r.height;return{x:((e.clientX-r.left)*sx-PAD)/S.cell,y:((e.clientY-r.top)*sy-PAD)/S.cell};}
-const snapPt=g=>[Math.max(0,Math.min(S.map.cols,Math.round(g.x))),Math.max(0,Math.min(S.map.rows,Math.round(g.y)))];
+function toGrid(e){const r=board.getBoundingClientRect();return{x:((e.clientX-r.left)-S.camX)/S.zoom,y:((e.clientY-r.top)-S.camY)/S.zoom};}
+function toScreen(e){const r=board.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+const snapPt=g=>[clamp(Math.round(g.x),0,S.map.cols),clamp(Math.round(g.y),0,S.map.rows)];
 const r2=v=>Math.round(v*100)/100;
-const BRUSH_K={track:'t',erase:'te',oil:'o',oilerase:'oe'};
-function editDown(g,e){
+function unitAtCursor(g,s){return[Math.round(g.x-(s-1)/2),Math.round(g.y-(s-1)/2)];}
+function editDown(g){
   const t=S.tool;
-  if(BRUSH_K[t]){pushUndo();const st={k:BRUSH_K[t],r:S.brush,pts:[[r2(g.x),r2(g.y)]]};S.map.strokes.push(st);paintSeg(st,st.pts[0],null);S.drag={type:'paint',st};schedCompose();board.setPointerCapture(e.pointerId);}
-  else if(t==='start'||t==='gate'){const p=snapPt(g);S.drag={type:t,a:p,b:p};board.setPointerCapture(e.pointerId);}
+  if(BRUSH_K[t]){pushUndo();const st={k:BRUSH_K[t],r:S.brush,pts:[[r2(g.x),r2(g.y)]]};S.map.strokes.push(st);paintMaskSeg(st,st.pts[0],null);S.drag={type:'paint',st};schedCompose();}
+  else if(t==='start'||t==='gate'){const p=snapPt(g);S.drag={type:t,a:p,b:p};}
   else if(t==='flag'){const p=snapPt(g);const i=S.map.flags.findIndex(f=>f[0]===p[0]&&f[1]===p[1]);
     if(i>=0){pushUndo();S.map.flags.splice(i,1);}
     else if(maskAtPoint(p[0],p[1])){pushUndo();S.map.flags.push(p);}
     else $('#mStatus').textContent='깃발은 트랙 위 점에만 놓을 수 있어요.';
     autosave();renderToolExtra();}
+  else if(t==='tank'||t==='apc'){
+    const p=snapPt(g);const hit=S.map.units.findIndex(u=>inFoot(u,p[0],p[1]));
+    if(hit>=0){pushUndo();S.map.units.splice(hit,1);autosave();renderToolExtra();return;}
+    const s=S.unitSize,[x,y]=unitAtCursor(g,s),nu={type:t,x,y,size:s};
+    if(x<0||y<0||x+s-1>S.map.cols||y+s-1>S.map.rows){$('#mStatus').textContent='모눈 안쪽에 놓아 주세요.';return;}
+    for(let dy=0;dy<s;dy++)for(let dx=0;dx<s;dx++)if(!maskAtPoint(x+dx,y+dy)){$('#mStatus').textContent=`${UNIT_NAME[t]}는 몸 전체가 트랙 위에 있어야 해요. 트랙이 넓은 곳에 놓거나 크기를 줄여 보세요.`;return;}
+    if(S.map.units.some(u=>boxOverlap(u,nu))){$('#mStatus').textContent='다른 전차·장갑차와 겹쳐요.';return;}
+    pushUndo();S.map.units.push(nu);autosave();renderToolExtra();$('#mStatus').textContent=`${UNIT_NAME[t]} ${s}×${s}를 놓았어요.`;
+  }
 }
 function editMove(g){
   const d=S.drag;if(!d)return;
-  if(d.type==='paint'){const pts=d.st.pts,last=pts[pts.length-1];if(Math.hypot(g.x-last[0],g.y-last[1])>.15){const np=[r2(g.x),r2(g.y)];pts.push(np);paintSeg(d.st,last,np);schedCompose();}}
+  if(d.type==='paint'){const pts=d.st.pts,last=pts[pts.length-1];if(Math.hypot(g.x-last[0],g.y-last[1])>.15){const np=[r2(g.x),r2(g.y)];pts.push(np);BB.delete(d.st);paintMaskSeg(d.st,last,np);schedCompose();}}
   else d.b=snapPt(g);
 }
 function editUp(){
   const d=S.drag;if(!d)return;S.drag=null;
   if(d.type==='start'){if(d.a[0]!==d.b[0]||d.a[1]!==d.b[1]){pushUndo();S.map.start={a:d.a,b:d.b,dir:S.map.start?S.map.start.dir:1};}}
   else if(d.type==='gate'){
-    if(d.a[0]!==d.b[0]||d.a[1]!==d.b[1]){if(S.map.gates.length>=40){$('#mStatus').textContent='관문은 40개까지 만들 수 있어요.';}else{pushUndo();S.map.gates.push({a:d.a,b:d.b});}}
+    if(d.a[0]!==d.b[0]||d.a[1]!==d.b[1]){if(S.map.gates.length>=40)$('#mStatus').textContent='관문은 40개까지 만들 수 있어요.';else{pushUndo();S.map.gates.push({a:d.a,b:d.b});}}
     else{let bi=-1,bd=.7;S.map.gates.forEach((g,i)=>{const dd=distPtSeg(d.a[0],d.a[1],g.a,g.b);if(dd<bd){bd=dd;bi=i;}});if(bi>=0){pushUndo();S.map.gates.splice(bi,1);}}
   }
   autosave();renderToolExtra();renderModeOpts();
 }
 function randomFlags(n){
   buildMasks();const NW=S.map.cols+1,NH=S.map.rows+1,pts=[];
-  for(let y=0;y<NH;y++)for(let x=0;x<NW;x++)if(PT[y*NW+x]&&!(S.map.start&&distPtSeg(x,y,S.map.start.a,S.map.start.b)<2.5))pts.push([x,y]);
+  for(let y=0;y<NH;y++)for(let x=0;x<NW;x++)if(PT[y*NW+x]&&!(S.map.start&&distPtSeg(x,y,S.map.start.a,S.map.start.b)<2.5)&&!S.map.units.some(u=>inFoot(u,x,y)))pts.push([x,y]);
   for(let i=pts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pts[i],pts[j]]=[pts[j],pts[i]];}
   const out=[];
   for(const gap of [6,4,2,0]){for(const p of pts){if(out.length>=n)break;if(out.some(q=>q[0]===p[0]&&q[1]===p[1]))continue;if(out.every(q=>Math.hypot(q[0]-p[0],q[1]-p[1])>=gap))out.push(p);}if(out.length>=n)break;}
   pushUndo();S.map.flags=out;autosave();renderToolExtra();renderModeOpts();
-  return out.length;
 }
 function setTool(t){
   S.tool=t;document.querySelectorAll('#tools button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===t));
-  $('#toolHint').textContent=TOOL_HINT[t];$('#brushRow').hidden=!BRUSH_K[t];renderToolExtra();setEditMsg();
+  $('#toolHint').textContent=TOOLS[t].h;$('#brushRow').hidden=!BRUSH_K[t];renderToolExtra();setEditMsg();
+  board.style.cursor=t==='hand'?'grab':'crosshair';
 }
 function renderToolExtra(){
   const t=S.tool,el=$('#toolExtra');
   if(t==='start'){
-    el.innerHTML=`<div class="btnrow"><button class="btn" id="flipDir">달리는 방향 뒤집기</button><button class="btn" id="delStart">출발선 지우기</button></div><p class="hint">${S.map.start?'출발선 있음 · 위 화살표 방향으로 달려요':'아직 출발선이 없어요'}</p>`;
+    el.innerHTML=`<div class="btnrow"><button class="btn" id="flipDir">달리는 방향 뒤집기</button><button class="btn" id="delStart">출발선 지우기</button></div><p class="hint">${S.map.start?'출발선 있음 · 화살표 방향으로 달려요':'아직 출발선이 없어요'}</p>`;
     $('#flipDir').onclick=()=>{if(!S.map.start)return;pushUndo();S.map.start.dir*=-1;autosave();};
     $('#delStart').onclick=()=>{if(!S.map.start)return;pushUndo();S.map.start=null;autosave();renderToolExtra();};
   }else if(t==='flag'){
-    el.innerHTML=`<div class="inline"><label>깃발 수<input type="number" id="flagN" min="1" max="60" value="${S.setup.flagCount}"></label><button class="btn" id="flagRand">무작위로 놓기</button></div><div class="btnrow"><button class="btn" id="flagClear">깃발 모두 치우기</button></div><p class="hint">지금 깃발 ${S.map.flags.length}개</p>`;
-    $('#flagN').onchange=e=>{S.setup.flagCount=Math.max(1,Math.min(60,+e.target.value||5));};
-    $('#flagRand').onclick=()=>{S.setup.flagCount=Math.max(1,Math.min(60,+$('#flagN').value||5));randomFlags(S.setup.flagCount);};
+    el.innerHTML=`<div class="inline"><label>깃발 수<input type="number" id="flagN" min="1" max="200" value="${S.setup.flagCount}"></label><button class="btn" id="flagRand">무작위로 놓기</button></div><div class="btnrow"><button class="btn" id="flagClear">깃발 모두 치우기</button></div><p class="hint">지금 깃발 ${S.map.flags.length}개</p>`;
+    $('#flagN').onchange=e=>{S.setup.flagCount=clamp(+e.target.value||5,1,200);};
+    $('#flagRand').onclick=()=>{S.setup.flagCount=clamp(+$('#flagN').value||5,1,200);randomFlags(S.setup.flagCount);};
     $('#flagClear').onclick=()=>{pushUndo();S.map.flags=[];autosave();renderToolExtra();};
   }else if(t==='gate'){
     el.innerHTML=`<div class="btnrow"><button class="btn" id="gateLast">마지막 관문 지우기</button><button class="btn" id="gateClear">관문 모두 지우기</button></div><p class="hint">지금 관문 ${S.map.gates.length}개</p>`;
     $('#gateLast').onclick=()=>{if(!S.map.gates.length)return;pushUndo();S.map.gates.pop();autosave();renderToolExtra();};
     $('#gateClear').onclick=()=>{pushUndo();S.map.gates=[];autosave();renderToolExtra();};
+  }else if(t==='tank'||t==='apc'){
+    const nt=S.map.units.filter(u=>u.type==='tank').length,na=S.map.units.length-nt;
+    el.innerHTML=`<label>크기</label><div class="seg" id="sizeSeg">${[1,2,3].map(s=>`<button data-s="${s}" aria-pressed="${s===S.unitSize}">${s}×${s}</button>`).join('')}</div>
+      <div class="btnrow"><button class="btn" id="unitClear">전차·장갑차 모두 치우기</button></div><p class="hint">지금 전차 ${nt}대 · 장갑차 ${na}대</p>`;
+    el.querySelectorAll('#sizeSeg button').forEach(b=>b.onclick=()=>{S.unitSize=+b.dataset.s;renderToolExtra();});
+    $('#unitClear').onclick=()=>{pushUndo();S.map.units=[];autosave();renderToolExtra();};
   }else el.innerHTML='';
 }
 
@@ -568,162 +672,406 @@ function renderModeOpts(){
     $('#laps').onchange=e=>S.setup.laps=+e.target.value;
   }else if(m==='flag'){
     el.innerHTML=`<label>점수 얻는 조건<select id="stopRule"><option value="land">깃발 점에 도착하면</option><option value="stop">깃발 점에서 완전히 멈추면 (속도 0)</option></select></label>
-      <div class="inline"><label>깃발 수<input type="number" id="flagN2" min="1" max="60" value="${S.setup.flagCount}"></label><button class="btn" id="flagRand2">무작위로 놓기</button></div>
+      <div class="inline"><label>깃발 수<input type="number" id="flagN2" min="1" max="200" value="${S.setup.flagCount}"></label><button class="btn" id="flagRand2">무작위로 놓기</button></div>
       <p class="hint">맵에 깃발 ${S.map.flags.length}개 · 원하는 곳에 직접 놓으려면 맵 만들기의 깃발 도구를 쓰세요.</p>`;
     $('#stopRule').value=S.setup.stopRule;$('#stopRule').onchange=e=>S.setup.stopRule=e.target.value;
-    $('#flagN2').onchange=e=>{S.setup.flagCount=Math.max(1,Math.min(60,+e.target.value||5));};
-    $('#flagRand2').onclick=()=>{S.setup.flagCount=Math.max(1,Math.min(60,+$('#flagN2').value||5));randomFlags(S.setup.flagCount);};
-  }else{
+    $('#flagN2').onchange=e=>{S.setup.flagCount=clamp(+e.target.value||5,1,200);};
+    $('#flagRand2').onclick=()=>{S.setup.flagCount=clamp(+$('#flagN2').value||5,1,200);randomFlags(S.setup.flagCount);};
+  }else if(m==='gate'){
     el.innerHTML=`<p class="hint">맵에 관문 ${S.map.gates.length}개 · 관문 수와 위치는 맵 만들기의 관문 도구로 정해요. 그은 순서가 관문 번호예요.</p>`;
+  }else{
+    el.innerHTML=`<label>버텨야 하는 턴 수<input type="number" id="warTurns" min="3" max="300" value="${S.setup.warTurns}"></label>
+      <p class="hint">이 턴이 끝날 때까지 한 대라도 살아남으면 살아남은 자동차가 승리. 모두 탈락하면 전차·장갑차를 조종한 플레이어가 승리해요. 맵에 전차 ${S.map.units.filter(u=>u.type==='tank').length}대 · 장갑차 ${S.map.units.filter(u=>u.type==='apc').length}대 · 폭격 구역 ${S.map.strokes.some(s=>s.k==='b')?'있음':'없음'}.</p>`;
+    $('#warTurns').onchange=e=>S.setup.warTurns=clamp(Math.round(+e.target.value||15),3,300);
   }
 }
 function renderSlots(){
   const sl=S.setup.slots;
-  $('#slots').innerHTML=sl.map((s,i)=>`<div class="slot${s.type==='none'?' off':''}"><span class="sw" style="--c:${PL[i].c}"></span><input type="text" id="sn${i}" maxlength="8" placeholder="${PL[i].n}" value="${esc(s.name)}" aria-label="${PL[i].n} 이름"><select id="st${i}" aria-label="${PL[i].n} 종류"><option value="human">사람</option><option value="ai">AI</option><option value="none">없음</option></select></div>`).join('');
+  $('#slots').innerHTML=sl.map((s,i)=>`<div class="slot${s.type==='none'?' off':''}"><span class="sw" style="--c:${PL[i].c}"></span><input type="text" id="sn${i}" maxlength="8" placeholder="${PL[i].n}" value="${esc(s.name)}" aria-label="${PL[i].n} 이름"><select id="st${i}" aria-label="${PL[i].n} 종류"><option value="human">사람 · 자동차</option><option value="ai">AI · 자동차</option><option value="tank">사람 · 전차</option><option value="apc">사람 · 장갑차</option><option value="none">없음</option></select><select id="ss${i}" aria-label="${PL[i].n} 크기" ${s.type==='tank'||s.type==='apc'?'':'disabled'}><option value="1">1×1</option><option value="2">2×2</option><option value="3">3×3</option></select></div>`).join('');
   sl.forEach((s,i)=>{
-    const sel=$('#st'+i);sel.value=s.type;
-    sel.onchange=e=>{const v=e.target.value,prev=s.type;s.type=v;
+    const sel=$('#st'+i);sel.value=s.type;$('#ss'+i).value=s.size;
+    sel.onchange=e=>{const prev=s.type;s.type=e.target.value;
       if(sl.filter(q=>q.type==='ai').length>3){s.type=prev;$('#setupErr').textContent='AI는 최대 3명까지 넣을 수 있어요.';}else $('#setupErr').textContent='';
       renderSlots();};
+    $('#ss'+i).onchange=e=>s.size=+e.target.value;
     $('#sn'+i).oninput=e=>s.name=e.target.value;
   });
 }
 function prepare(){
-  const sl=S.setup.slots,act=sl.filter(s=>s.type!=='none');
+  const sl=S.setup.slots,act=sl.filter(s=>s.type!=='none'),cars=act.filter(s=>s.type==='human'||s.type==='ai');
   if(!act.length)return{err:'플레이어를 한 명 이상 넣어 주세요.'};
+  if(!cars.length)return{err:'자동차 플레이어(사람이나 AI)가 한 명 이상 있어야 해요.'};
   if(sl.filter(s=>s.type==='ai').length>3)return{err:'AI는 최대 3명까지예요.'};
   if(!S.map.start)return{err:'맵 만들기에서 출발선을 먼저 그어 주세요.'};
   buildMasks();
-  const cands=startCandidates();
-  if(cands.length<act.length)return{err:`출발선 위 트랙 점이 ${cands.length}개뿐이에요. 출발선을 트랙을 가로지르게 길게 그어 주세요.`};
-  const d={cands};const mode=S.setup.mode;
+  const NW=S.map.cols+1,units=[];let dropped=0;
+  for(const u of S.map.units){const nu={type:u.type,x:u.x,y:u.y,size:u.size};
+    if(VAL[u.size]&&VAL[u.size][u.y*NW+u.x]&&!units.some(o=>boxOverlap(o,nu)))units.push(nu);else dropped++;}
+  const cands=startCandidates(units);
+  if(cands.length<cars.length)return{err:`출발선 위 빈 트랙 점이 ${cands.length}개뿐이에요. 출발선을 트랙을 가로지르게 길게 긋거나 위의 전차·장갑차를 옮겨 주세요.`};
+  const d={cands,units,dropped};const mode=S.setup.mode;
   if(mode==='race'){const rf=raceField();
     if(!rf)return{err:'출발선이 트랙을 가로질러야 해요.'};
     if(rf.LAP<0)return{err:'트랙이 고리 모양이어야 해요. 출발선을 지나 한 바퀴 돌아 다시 출발선 뒤쪽으로 올 수 있게 이어 주세요.'};
     Object.assign(d,rf);}
-  else if(mode==='flag'){const fl=S.map.flags.filter(f=>onT(f[0],f[1]));if(!fl.length)return{err:'트랙 위에 깃발이 하나도 없어요. 깃발을 놓거나 무작위로 놓아 주세요.'};d.flags=fl.map(f=>f.slice());}
-  else{if(!S.map.gates.length)return{err:'관문을 하나 이상 그어 주세요.'};Object.assign(d,gateFields(S.map.gates));}
+  else if(mode==='flag'){const fl=S.map.flags.filter(f=>onT(f[0],f[1])&&!units.some(u=>inFoot(u,f[0],f[1])));if(!fl.length)return{err:'트랙 위에 깃발이 하나도 없어요. 깃발을 놓거나 무작위로 놓아 주세요.'};d.flags=fl.map(f=>f.slice());}
+  else if(mode==='gate'){if(!S.map.gates.length)return{err:'관문을 하나 이상 그어 주세요.'};Object.assign(d,gateFields(S.map.gates));}
   return{d};
 }
+let UID=0;
 function startGame(){
+  S.setup.tankRange=clamp(Math.round(+$('#tankRange').value||10),3,60);S.setup.tankReload=clamp(Math.round(+$('#tankReload').value||2),1,10);
+  $('#tankRange').value=S.setup.tankRange;$('#tankReload').value=S.setup.tankReload;
   const r=prepare();if(r.err){$('#setupErr').textContent=r.err;setView('setup');return;}
   $('#setupErr').textContent='';
-  if(S.G)clearTimeout(S.G.timer);
+  if(S.G)S.G.dead=true;
   const st=S.map.start,ex=st.b[0]-st.a[0],ey=st.b[1]-st.a[1];
-  const G=Object.assign({mode:S.setup.mode,laps:S.setup.laps,stopRule:S.setup.stopRule,aiLevel:S.setup.ai,
-    gates:S.map.gates.map(g=>({a:g.a.slice(),b:g.b.slice()})),flags:[],cur:0,phase:'place',turn:1,log:[],marks:[],anim:null,busy:false,opts:[],segCache:new Map(),
-    fwd:Math.atan2(st.dir*ex,st.dir*-ey)},r.d);
-  G.players=S.setup.slots.map((s,i)=>({s,i})).filter(o=>o.s.type!=='none').map(({s,i})=>({idx:i,name:(s.name||'').trim()||PL[i].n,color:PL[i].c,ai:s.type==='ai',
-    x:0,y:0,vx:0,vy:0,skip:0,count:0,next:0,score:0,trail:[],fails:[],placed:false,heading:G.fwd}));
+  const G=Object.assign({mode:S.setup.mode,laps:S.setup.laps,stopRule:S.setup.stopRule,aiLevel:S.setup.ai,warTurns:S.setup.warTurns,
+    tankRange:S.setup.tankRange,tankReload:S.setup.tankReload,speed:S.setup.anim,
+    gates:S.map.gates.map(g=>({a:g.a.slice(),b:g.b.slice()})),flags:[],cur:0,phase:'place',turn:1,marks:[],fx:[],anim:null,uanim:null,input:null,
+    opts:[],uopts:[],targets:[],segCache:new Map(),fwd:Math.atan2(st.dir*ex,st.dir*-ey)},r.d);
+  G.units=r.d.units.map(u=>Object.assign(u,{id:++UID,owner:null,cd:0,aim:G.fwd+Math.PI}));
+  G.players=S.setup.slots.map((s,i)=>({s,i})).filter(o=>o.s.type!=='none').map(({s,i})=>({idx:i,name:(s.name||'').trim()||PL[i].n,color:PL[i].c,
+    kind:(s.type==='tank'||s.type==='apc')?s.type:'car',ai:s.type==='ai',size:s.size,
+    x:0,y:0,vx:0,vy:0,skip:0,flip:0,out:false,count:0,next:0,score:0,trail:[],fails:[],knocks:[],placed:false,heading:G.fwd,spin:0,unit:null}));
   if(G.mode==='flag')flagField(G);
   S.G=G;S.hover=-1;$('#log').innerHTML='';$('#overlay').hidden=true;
-  $('#tabPlay').disabled=false;$('#playTitle').textContent=MODE_NAME[G.mode]+(G.mode==='race'?` · ${G.laps}바퀴`:G.mode==='flag'?` · 깃발 ${G.flags.length}개`:` · 관문 ${G.gates.length}개`);
+  $('#tabPlay').disabled=false;
+  $('#playTitle').textContent=MODE_NAME[G.mode]+(G.mode==='race'?` · ${G.laps}바퀴`:G.mode==='flag'?` · 깃발 ${G.flags.length}개`:G.mode==='gate'?` · 관문 ${G.gates.length}개`:` · ${G.warTurns}턴 버티기`);
   $('#endNow').hidden=G.mode!=='flag';
-  setView('play');log(null,`${MODE_NAME[G.mode]} 시작 — 출발선에 차를 놓아요`);
-  nextPlacement();
+  setView('play');
+  log(null,`${MODE_NAME[G.mode]} 시작 — 출발 자리를 정해요`);
+  if(r.d.dropped)log(null,`트랙 밖에 걸친 전차·장갑차 ${r.d.dropped}대는 빠졌어요`);
+  gameLoop(G);
 }
+
+/* ---------- async helpers ---------- */
+const ABORT={abort:true};
+const live=G=>{if(S.G!==G||G.dead)throw ABORT;};
+function sleep(G,ms){return new Promise((res,rej)=>setTimeout(()=>(S.G===G&&!G.dead)?res():rej(ABORT),ms*G.speed));}
+function animCar(G,p,from,to,dur,spin){return new Promise((res,rej)=>{G.anim={p,from,to,t0:performance.now(),dur:Math.max(30,dur*G.speed),k:0,spin:!!spin,res:()=>(S.G===G&&!G.dead)?res():rej(ABORT)};});}
+function animUnit(G,u,from,to,dur){return new Promise((res,rej)=>{G.uanim={u,from,to,t0:performance.now(),dur:Math.max(30,dur*G.speed),k:0,res:()=>(S.G===G&&!G.dead)?res():rej(ABORT)};});}
+function waitInput(G,type){return new Promise(res=>{G.input={type,res:v=>{G.input=null;S.hover=-1;updatePad();res(v);}};updatePad();});}
+function fx(G,f){f.t0=performance.now();f.dur=(f.dur||500)*G.speed;G.fx.push(f);}
 
 /* ---------- game flow ---------- */
 function log(p,text,cls){
   const li=document.createElement('li');if(cls)li.className=cls;
   li.style.setProperty('--c',p?p.color:'#56637d');li.innerHTML=`<i></i><span>${esc(text)}</span>`;
-  const el=$('#log');el.prepend(li);while(el.children.length>60)el.lastChild.remove();
+  const el=$('#log');el.prepend(li);while(el.children.length>80)el.lastChild.remove();
 }
 function setMsg(color,text){$('.turnbar').style.setProperty('--c',color||'#56637d');$('#turnText').textContent=text;}
-function freeCands(G){return G.cands.filter(c=>!G.players.some(q=>q.placed&&q.x===c[0]&&q.y===c[1]));}
-function nextPlacement(){
-  const G=S.G,p=G.players[G.cur];G.free=freeCands(G);updatePanel();
-  if(p.ai){G.busy=true;setMsg(p.color,`${p.name}(AI)이 출발 자리를 고르는 중…`);
-    G.timer=setTimeout(()=>{if(S.G!==G)return;place(p,aiPlace(G,p,G.free));},500);}
-  else{G.busy=false;setMsg(p.color,`${p.name} 차례 — 출발선 위 동그라미 점을 눌러 차를 놓으세요`);}
-}
-function place(p,c){
-  const G=S.G;p.x=c[0];p.y=c[1];p.placed=true;p.trail=[[p.x,p.y]];
+const cars=G=>G.players.filter(p=>p.kind==='car');
+const liveCars=G=>cars(G).filter(p=>p.placed&&!p.out);
+function freeCands(G){return G.cands.filter(c=>!G.players.some(q=>q.kind==='car'&&q.placed&&q.x===c[0]&&q.y===c[1])&&!G.units.some(u=>inFoot(u,c[0],c[1])));}
+function placeCar(G,p,c){
+  p.x=c[0];p.y=c[1];p.placed=true;p.trail=[[p.x,p.y]];
   p.count=sideOf(S.map.start,p.x,p.y)>0?1:0;p.heading=G.fwd;
   log(p,`${p.name} 출발 자리 (${p.x}, ${p.y})`);
-  G.cur++;
-  if(G.cur>=G.players.length){G.phase='race';G.cur=0;G.turn=1;log(null,'레이스 시작!');startTurn();}
-  else nextPlacement();
 }
-function progOf(G,p){return G.mode==='race'?p.count:G.mode==='gate'?p.next:0;}
-function optionsFor(p){
-  const G=S.G,res=[],lock=oilLock(p.x,p.y,p.vx,p.vy),accs=lock?[[0,0]]:ACC;
+function placeUnit(G,p,pos){
+  const u={id:++UID,type:p.kind,x:pos[0],y:pos[1],size:p.size,owner:p,cd:0,aim:G.fwd};
+  p.unit=u;p.placed=true;G.units.push(u);log(p,`${p.name} ${UNIT_NAME[p.kind]} 배치 (${pos[0]}, ${pos[1]})`);
+}
+async function gameLoop(G){
+  try{
+    for(G.cur=0;G.cur<G.players.length;G.cur++){
+      const p=G.players[G.cur];updatePanel();
+      if(p.kind==='car'){
+        G.free=freeCands(G);
+        if(!G.free.length){log(p,`${p.name} 출발선에 빈자리가 없어 빠졌어요`);p.out=true;continue;}
+        if(p.ai){setMsg(p.color,`${p.name}(AI)이 출발 자리를 고르는 중…`);await sleep(G,450);placeCar(G,p,aiPlace(G,p,G.free));}
+        else{setMsg(p.color,`${p.name} 차례 — 출발선 위 동그라미 점을 눌러 차를 놓으세요`);placeCar(G,p,await waitInput(G,'placeCar'));}
+      }else{
+        setMsg(p.color,`${p.name} — ${UNIT_NAME[p.kind]} ${p.size}×${p.size}를 놓을 트랙 위 빈 곳을 누르세요`);
+        placeUnit(G,p,await waitInput(G,'placeUnit'));
+      }
+    }
+    G.phase='race';log(null,'출발!');
+    for(;;){
+      for(G.cur=0;G.cur<G.players.length;G.cur++){
+        const p=G.players[G.cur];if(p.out||!p.placed)continue;
+        await playerTurn(G,p);if(G.phase==='over')return;
+      }
+      G.cur=-1;
+      if(G.units.some(u=>!u.owner)){setMsg('#5d6a3c','전차·장갑차가 움직이는 중…');updatePanel();await unitPhase(G);if(G.phase==='over')return;}
+      if(G.mode==='war'){
+        const alive=liveCars(G);
+        if(!alive.length)return endWar(G);
+        if(G.turn>=G.warTurns)return win(G,alive,'survive');
+      }
+      G.turn++;
+    }
+  }catch(e){if(e!==ABORT)console.error(e);}
+}
+async function playerTurn(G,p){
+  G.opts=[];G.uopts=[];G.targets=[];S.hover=-1;updatePanel();
+  if(p.kind!=='car')return humanUnitTurn(G,p);
+  if(p.placed&&!p.out)ensureVisible(p.x,p.y);
+  if(p.flip>0){p.flip--;setMsg(p.color,`${p.name} 뒤집혀 있어요… (남은 전복 ${p.flip}턴)`);updatePanel();await sleep(G,650);return;}
+  if(p.skip>0){p.skip--;setMsg(p.color,`${p.name} 충돌 후 쉬는 중… (남은 휴식 ${p.skip}턴)`);updatePanel();await sleep(G,650);await bombCheck(G,p);return;}
+  const{list,lock}=optionsFor(G,p);G.opts=list;G.lock=lock;
+  if(list.every(o=>o.status==='blocked')){setMsg(p.color,`${p.name} 앞이 막혀 움직일 수 없어요`);await sleep(G,650);p.vx=p.vy=0;log(p,`${p.name} 길이 막혀 제자리에 멈춤`);await bombCheck(G,p);return;}
+  let o;
+  if(p.ai){setMsg(p.color,`${p.name}(AI) 생각 중…`);updatePad();await sleep(G,300);o=aiPick(G,p,list);}
+  else{setMsg(p.color,`${p.name} 차례 — 다음 점을 고르세요 · 속도 ${fmtV(p.vx,p.vy)}${lock?' · 기름 위! 같은 속도·방향으로 미끄러져요':''}`);o=await waitInput(G,'move');}
+  G.opts=[];S.hover=-1;updatePad();
+  await carMove(G,p,o);if(G.phase==='over')return;
+  if(!p.out&&p.flip===0)await bombCheck(G,p);
+}
+function optionsFor(G,p){
+  const res=[],lock=oilLock(p.x,p.y,p.vx,p.vy),accs=lock?[[0,0]]:ACC;
   for(const[ax,ay]of accs){
-    const vx=p.vx+ax,vy=p.vy+ay,x=p.x+vx,y=p.y+vy,o={ax,ay,vx,vy,x,y,status:'ok'};
-    if(G.players.some(q=>q!==p&&q.placed&&q.x===x&&q.y===y))o.status='blocked';
-    else{const t=segCheck(p.x,p.y,x,y);if(t>=0){o.status='crash';o.cx=p.x+vx*t;o.cy=p.y+vy*t;}}
+    const vx=p.vx+ax,vy=p.vy+ay,x=p.x+vx,y=p.y+vy,o={ax,ay,vx,vy,x,y,status:'ok',danger:false};
+    if(G.players.some(q=>q!==p&&q.kind==='car'&&q.placed&&!q.out&&q.x===x&&q.y===y))o.status='blocked';
+    else{
+      let ct=segCheck(p.x,p.y,x,y);
+      for(const u of G.units){const iv=segBox(p.x,p.y,x,y,u.x-.5,u.y-.5,u.x+u.size-.5,u.y+u.size-.5);if(iv&&(ct<0||iv[0]<ct))ct=iv[0];}
+      if(ct>=0){o.status='crash';o.ct=ct;o.cx=p.x+vx*ct;o.cy=p.y+vy*ct;}
+      const end=ct>=0?ct:1;
+      o.danger=G.units.some(u=>{if(u.type!=='apc')return false;const iv=segBox(p.x,p.y,x,y,u.x-1.5,u.y-1.5,u.x+u.size+.5,u.y+u.size+.5);return iv&&iv[0]<=end;});
+    }
     res.push(o);
   }
   return{list:res,lock};
 }
-function startTurn(){
-  const G=S.G;if(!G||G.phase!=='race')return;
-  const p=G.players[G.cur];G.opts=[];S.hover=-1;updatePanel();
-  if(p.skip>0){G.busy=true;p.skip--;setMsg(p.color,`${p.name} 충돌 후 쉬는 중… (남은 휴식 ${p.skip}턴)`);updatePanel();
-    G.timer=setTimeout(()=>{if(S.G!==G)return;log(p,`${p.name} 한 턴 쉼`);endTurn();},800);return;}
-  const{list,lock}=optionsFor(p);G.opts=list;G.lock=lock;
-  if(list.every(o=>o.status==='blocked')){G.busy=true;setMsg(p.color,`${p.name} 앞이 막혀 움직일 수 없어요`);
-    G.timer=setTimeout(()=>{if(S.G!==G)return;p.vx=p.vy=0;log(p,`${p.name} 길이 막혀 제자리에 멈춤`);endTurn();},800);return;}
-  updatePad();
-  if(p.ai){G.busy=true;setMsg(p.color,`${p.name}(AI) 생각 중…`);
-    G.timer=setTimeout(()=>{if(S.G!==G)return;doMove(p,aiPick(G,p,list));},380);}
-  else{G.busy=false;setMsg(p.color,`${p.name} 차례 — 다음 점을 고르세요 · 속도 ${fmtV(p.vx,p.vy)}${lock?' · 기름 위! 같은 속도·방향으로 미끄러져요':''}`);}
-  updatePad();
-}
-function animate(G,p,from,to,dur,cb){G.anim={p,from,to,t0:performance.now(),dur,cb,k:0};}
-function doMove(p,o){
-  const G=S.G;if(!o)return;G.busy=true;S.hover=-1;updatePad();
-  const from=[p.x,p.y];
-  if(o.status==='crash'){
-    const to=[o.cx,o.cy];
-    animate(G,p,from,to,240,()=>{G.marks.push(to);p.fails.push([from,to]);
-      animate(G,p,to,from,180,()=>{p.vx=p.vy=0;p.skip=2;log(p,`${p.name} 충돌! 2턴을 쉬어요`,'crash');endTurn();});});
+const rollMG=()=>{let h=0;for(let i=0;i<10;i++)if(Math.random()<.1)h++;return h;};
+async function carMove(G,p,o){
+  const from=[p.x,p.y],dx=o.vx,dy=o.vy,end=o.status==='crash'?o.ct:1;
+  const baseDur=200+28*Math.min(12,Math.hypot(dx,dy));
+  const fires=[];
+  for(const u of G.units){if(u.type!=='apc')continue;
+    const iv=segBox(from[0],from[1],o.x,o.y,u.x-1.5,u.y-1.5,u.x+u.size+.5,u.y+u.size+.5);if(!iv||iv[0]>end)continue;
+    const c=center(u),l2=dx*dx+dy*dy;let t=l2?((c.x-from[0])*dx+(c.y-from[1])*dy)/l2:0;t=clamp(t,iv[0],Math.min(iv[1],end));
+    fires.push({u,t,hits:rollMG()});}
+  fires.sort((a,b)=>a.t-b.t);
+  const hit=fires.find(f=>f.hits>0);
+  if(dx||dy)p.heading=Math.atan2(dy,dx);
+  const shoot=list=>{for(const f of list){const c=center(f.u);f.u.aim=Math.atan2(from[1]+dy*f.t-c.y,from[0]+dx*f.t-c.x);
+    fx(G,{k:'mg',from:[c.x,c.y],to:[from[0]+dx*f.t,from[1]+dy*f.t],dur:500});
+    log(f.u.owner||null,`${f.u.owner?f.u.owner.name+' ':''}장갑차 기관총 10발 → ${p.name} ${f.hits?f.hits+'발 명중!':'모두 빗나감'}`,f.hits?'crash':'');}};
+  if(hit){
+    const hx=from[0]+dx*hit.t,hy=from[1]+dy*hit.t;
+    await animCar(G,p,from,[hx,hy],baseDur*Math.max(.15,hit.t));
+    shoot(fires.filter(f=>f.t<=hit.t));
+    progressDrive(G,p,from,[hx,hy]);if(G.phase==='over')return;
+    p.x=hx;p.y=hy;await sleep(G,420);
+    const c=center(hit.u);await knockback(G,p,hx-c.x,hy-c.y,5,'장갑차 기관총');
     return;
   }
-  if(o.vx||o.vy)p.heading=Math.atan2(o.vy,o.vx);
-  const dur=200+28*Math.min(12,Math.hypot(o.vx,o.vy));
-  animate(G,p,from,[o.x,o.y],dur,()=>{p.x=o.x;p.y=o.y;p.vx=o.vx;p.vy=o.vy;p.trail.push([o.x,o.y]);afterMove(p,from);});
+  if(o.status==='crash'){
+    const to=[o.cx,o.cy];
+    await animCar(G,p,from,to,240);shoot(fires);
+    G.marks.push(to);p.fails.push([from,to]);
+    await animCar(G,p,to,from,180);
+    p.vx=p.vy=0;p.skip=G.mode==='war'?1:2;
+    log(p,`${p.name} 충돌! ${p.skip}턴을 쉬어요`,'crash');return;
+  }
+  await animCar(G,p,from,[o.x,o.y],baseDur);
+  shoot(fires);
+  p.x=o.x;p.y=o.y;p.vx=o.vx;p.vy=o.vy;p.trail.push([o.x,o.y]);
+  if(fires.length)await sleep(G,300);
+  progressDrive(G,p,from,[p.x,p.y]);if(G.phase==='over')return;
+  if(G.mode==='flag'){const i=G.flags.findIndex(f=>f[0]===p.x&&f[1]===p.y);
+    if(i>=0&&(G.stopRule==='land'||(p.vx===0&&p.vy===0))){G.flags.splice(i,1);p.score++;log(p,`${p.name} 깃발 획득! (${p.score}점)`);flagField(G);updatePanel();
+      if(!G.flags.length)return finishFlags(G);}}
 }
-function afterMove(p,from){
-  const G=S.G;
-  if(G.mode==='race'){const d=crossDelta(S.map.start,from[0],from[1],p.x,p.y);
+function progressDrive(G,p,from,to){
+  if(G.mode==='race'){const d=crossDelta(S.map.start,from[0],from[1],to[0],to[1]);
     if(d){p.count+=d;
-      if(d>0&&p.count>=G.laps+1){updatePanel();return win([p]);}
+      if(d>0&&p.count>=G.laps+1){updatePanel();return win(G,[p],'race');}
       if(d>0&&p.count>=2)log(p,`${p.name} ${p.count-1}바퀴 완주`);
       if(d<0)log(p,`${p.name} 출발선을 거꾸로 넘음`);}}
   else if(G.mode==='gate'){
-    while(p.next<G.gates.length&&segInter(from[0],from[1],p.x,p.y,G.gates[p.next])){p.next++;log(p,`${p.name} 관문 ${p.next} 통과`);}
-    if(p.next>=G.gates.length){updatePanel();return win([p]);}}
-  else{const i=G.flags.findIndex(f=>f[0]===p.x&&f[1]===p.y);
-    if(i>=0&&(G.stopRule==='land'||(p.vx===0&&p.vy===0))){G.flags.splice(i,1);p.score++;log(p,`${p.name} 깃발 획득! (${p.score}점)`);flagField(G);
-      if(!G.flags.length){updatePanel();return finishFlags();}}}
-  endTurn();
+    while(p.next<G.gates.length&&segInter(from[0],from[1],to[0],to[1],G.gates[p.next])){p.next++;log(p,`${p.name} 관문 ${p.next} 통과`);}
+    if(p.next>=G.gates.length){updatePanel();return win(G,[p],'gate');}}
 }
-function endTurn(){
-  const G=S.G;if(!G||G.phase!=='race')return;
-  G.cur=(G.cur+1)%G.players.length;if(G.cur===0)G.turn++;
-  startTurn();
+function freeForCar(G,p,x,y){
+  if(!ptOK(x,y))return false;
+  if(G.players.some(q=>q!==p&&q.kind==='car'&&q.placed&&!q.out&&q.x===x&&q.y===y))return false;
+  return !G.units.some(u=>inFoot(u,x,y));
 }
-function finishFlags(){const G=S.G;const mx=Math.max(...G.players.map(p=>p.score));win(G.players.filter(p=>p.score===mx));}
-function win(ws){
-  const G=S.G;G.phase='over';G.busy=true;G.opts=[];clearTimeout(G.timer);updatePanel();
-  const names=ws.map(p=>p.name).join(', ');
-  $('#winTitle').textContent=ws.length>1?`${names} 공동 우승`:`${names} 우승!`;
-  $('#winTitle').style.color=ws.length===1?ws[0].color:'';
-  $('#winSub').textContent=G.mode==='race'?`${G.turn}번째 턴에 결승선을 가장 먼저 통과했어요.`:G.mode==='gate'?`관문 ${G.gates.length}개를 순서대로 가장 먼저 통과했어요 · ${G.turn}턴`:`깃발 뺏기 끝 · ${G.turn}턴`;
-  $('#winScores').innerHTML=G.mode==='flag'?G.players.slice().sort((a,b)=>b.score-a.score).map(p=>`<div style="color:${p.color}"><span>${esc(p.name)}</span><span class="mono">${p.score}점</span></div>`).join(''):'';
-  $('#overlay').hidden=false;setMsg(ws[0].color,`${$('#winTitle').textContent}`);log(ws[0],$('#winTitle').textContent);
+function inUnitBody(G,x,y){return G.units.some(u=>x>=u.x-.5&&x<=u.x+u.size-.5&&y>=u.y-.5&&y<=u.y+u.size-.5);}
+async function knockback(G,p,dx,dy,turns,src){
+  let len=Math.hypot(dx,dy);if(len<1e-6){const a=Math.random()*Math.PI*2;dx=Math.cos(a);dy=Math.sin(a);len=1;}
+  const ux=dx/len,uy=dy/len,sx=p.x,sy=p.y;let t=0;
+  while(t<3000){const nx=sx+ux*(t+.25),ny=sy+uy*(t+.25);if(!onT(nx,ny)||inUnitBody(G,nx,ny))break;t+=.25;}
+  let land=null;
+  for(let k=t;k>=-.001&&!land;k-=.25){const gx=Math.round(sx+ux*k),gy=Math.round(sy+uy*k);if(freeForCar(G,p,gx,gy))land=[gx,gy];}
+  if(!land){outer:for(let r=0;r<8;r++)for(let yy=-r;yy<=r;yy++)for(let xx=-r;xx<=r;xx++){const gx=Math.round(sx)+xx,gy=Math.round(sy)+yy;if(freeForCar(G,p,gx,gy)){land=[gx,gy];break outer;}}}
+  if(!land)land=[Math.round(sx),Math.round(sy)];
+  fx(G,{k:'boom',x:sx,y:sy,dur:600});
+  await animCar(G,p,[sx,sy],land,clamp(260+t*30,300,1100),true);
+  if(G.mode==='race'){const d=crossDelta(S.map.start,sx,sy,land[0],land[1]);p.count+=d;}
+  p.knocks.push([[sx,sy],land]);
+  p.x=land[0];p.y=land[1];p.vx=p.vy=0;p.trail.push([p.x,p.y]);
+  if(G.mode==='war'){eliminate(G,p,src);}
+  else{p.flip=turns;p.skip=0;log(p,`${p.name} ${src}에 맞아 ${Math.round(t)}칸 날아가 전복! ${turns}턴 동안 못 움직여요`,'crash');}
+  updatePanel();
+}
+function eliminate(G,p,src){
+  p.out=true;p.flip=0;p.skip=0;log(p,`${p.name} ${src}에 맞아 탈락!`,'crash');updatePanel();
+  if(G.mode==='war'&&!liveCars(G).length)endWar(G);
+}
+async function bombCheck(G,p){
+  if(p.out||p.flip>0||!onBomb(p.x,p.y))return;
+  if(Math.random()>=.15)return;
+  setMsg(p.color,`B-2 폭격기 접근! ${p.name} 위로 폭탄이 떨어져요`);
+  fx(G,{k:'b2',x:p.x,y:p.y,dur:1300});await sleep(G,900);
+  fx(G,{k:'boom',x:p.x,y:p.y,dur:900,big:true});await sleep(G,450);
+  if(G.mode==='war')eliminate(G,p,'B-2 폭격');
+  else{p.flip=3;p.skip=0;p.vx=p.vy=0;log(p,`${p.name} B-2 폭격에 전복! 3턴 동안 못 움직여요`,'crash');updatePanel();}
+}
+function finishFlags(G){const mx=Math.max(...cars(G).map(p=>p.score));win(G,cars(G).filter(p=>p.score===mx),'flag');}
+function endWar(G){const h=G.players.filter(p=>p.kind!=='car');win(G,h,'wiped');}
+function win(G,ws,why){
+  if(G.phase==='over')return;
+  G.phase='over';G.opts=[];G.uopts=[];G.targets=[];G.input=null;updatePanel();$('#turnAction').hidden=true;
+  const names=ws.map(p=>p.name).join(', ');let title,sub;
+  if(why==='survive'){title=ws.length>1?`${names} 생존!`:`${names} 생존 성공!`;sub=`${G.warTurns}턴을 끝까지 버텼어요.`;}
+  else if(why==='wiped'){title=ws.length?`${names} 승리!`:'전원 탈락';sub=`${G.turn}번째 턴에 모든 자동차가 탈락했어요.`;}
+  else{title=ws.length>1?`${names} 공동 우승`:`${names} 우승!`;
+    sub=why==='race'?`${G.turn}번째 턴에 결승선을 가장 먼저 통과했어요.`:why==='gate'?`관문 ${G.gates.length}개를 순서대로 가장 먼저 통과했어요 · ${G.turn}턴`:`깃발 뺏기 끝 · ${G.turn}턴`;}
+  $('#winTitle').textContent=title;$('#winTitle').style.color=ws.length===1?ws[0].color:'';$('#winSub').textContent=sub;
+  $('#winScores').innerHTML=why==='flag'?cars(G).slice().sort((a,b)=>b.score-a.score).map(p=>`<div style="color:${p.color}"><span>${esc(p.name)}</span><span class="mono">${p.score}점</span></div>`).join(''):'';
+  $('#overlay').hidden=false;setMsg(ws[0]?ws[0].color:null,title);log(ws[0]||null,title);
 }
 
-/* ---------- AI ---------- */
+/* ---------- tanks & APCs ---------- */
+let OCC=null,STAMP=null,PAR=null,QB=null,DEP=null,stampN=0;
+function occGrid(G,except){
+  const NW=S.map.cols+1,N=NW*(S.map.rows+1);
+  if(!OCC||OCC.length!==N){OCC=new Uint8Array(N);STAMP=new Int32Array(N);PAR=new Int32Array(N);QB=new Int32Array(N);DEP=new Int16Array(N);stampN=0;}else OCC.fill(0);
+  for(const p of G.players)if(p.kind==='car'&&p.placed&&!p.out)OCC[p.y*NW+p.x]=1;
+  for(const u of G.units)if(u!==except)for(let dy=0;dy<u.size;dy++)for(let dx=0;dx<u.size;dx++)OCC[(u.y+dy)*NW+u.x+dx]=1;
+  return OCC;
+}
+function freeForUnit(s,x,y,occ){
+  const m=S.map;if(x<0||y<0||x+s-1>m.cols||y+s-1>m.rows)return false;
+  const NW=m.cols+1;if(!VAL[s][y*NW+x])return false;
+  for(let dy=0;dy<s;dy++)for(let dx=0;dx<s;dx++)if(occ[(y+dy)*NW+x+dx])return false;
+  return true;
+}
+function targetable(G){return liveCars(G).filter(p=>p.flip===0);}
+function nearestCar(G,u){
+  const c=center(u);let best=[],bd=Infinity;
+  for(const p of targetable(G)){const d=Math.hypot(p.x-c.x,p.y-c.y);if(d<bd-1e-9){bd=d;best=[p];}else if(Math.abs(d-bd)<1e-9)best.push(p);}
+  return best.length?best[Math.floor(Math.random()*best.length)]:null;
+}
+function unitPath(G,u,tgt){
+  const NW=S.map.cols+1,s=u.size,occ=occGrid(G,u);
+  const goal=(x,y)=>tgt.x>=x-1&&tgt.x<=x+s&&tgt.y>=y-1&&tgt.y<=y+s;
+  if(goal(u.x,u.y))return[];
+  stampN++;let h=0,t=0;const si=u.y*NW+u.x;STAMP[si]=stampN;PAR[si]=-1;QB[t++]=si;
+  while(h<t){const i=QB[h++],x=i%NW,y=(i/NW)|0;
+    for(const[dx,dy]of NB8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=NW||ny>S.map.rows)continue;const j=ny*NW+nx;if(STAMP[j]===stampN)continue;STAMP[j]=stampN;
+      if(!freeForUnit(s,nx,ny,occ))continue;PAR[j]=i;
+      if(goal(nx,ny)){const path=[];let k=j;while(k!==si){path.push([k%NW,(k/NW)|0]);k=PAR[k];}return path.reverse();}
+      QB[t++]=j;}}
+  return null;
+}
+function greedyStep(G,u,tgt){
+  const occ=occGrid(G,u),c0=center(u);let best=null,bd=Math.hypot(tgt.x-c0.x,tgt.y-c0.y);
+  for(const[dx,dy]of NB8){const nx=u.x+dx,ny=u.y+dy;if(!freeForUnit(u.size,nx,ny,occ))continue;const d=Math.hypot(tgt.x-(nx+(u.size-1)/2),tgt.y-(ny+(u.size-1)/2));if(d<bd-1e-9){bd=d;best=[nx,ny];}}
+  return best;
+}
+function unitReach(G,u,maxSteps){
+  const NW=S.map.cols+1,s=u.size,occ=occGrid(G,u);stampN++;
+  let h=0,t=0;const si=u.y*NW+u.x;STAMP[si]=stampN;PAR[si]=-1;DEP[si]=0;QB[t++]=si;const out=[];
+  while(h<t){const i=QB[h++];if(DEP[i]>=maxSteps)continue;const x=i%NW,y=(i/NW)|0;
+    for(const[dx,dy]of NB8){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=NW||ny>S.map.rows)continue;const j=ny*NW+nx;if(STAMP[j]===stampN)continue;STAMP[j]=stampN;
+      if(!freeForUnit(s,nx,ny,occ))continue;PAR[j]=i;DEP[j]=DEP[i]+1;QB[t++]=j;
+      const path=[];let k=j;while(k!==si){path.push([k%NW,(k/NW)|0]);k=PAR[k];}out.push({x:nx,y:ny,path:path.reverse()});}}
+  return out;
+}
+async function moveUnit(G,u,pos){
+  const from=[u.x,u.y];u.aim=Math.atan2(pos[1]-u.y,pos[0]-u.x);u.heading=u.aim;
+  await animUnit(G,u,from,pos,u.type==='tank'?260:150);
+  u.x=pos[0];u.y=pos[1];
+}
+function tankTargets(G,u){
+  const c=center(u);
+  return targetable(G).filter(p=>Math.hypot(p.x-c.x,p.y-c.y)<=G.tankRange+1e-9&&segCheck(c.x,c.y,p.x,p.y)<0);
+}
+function pickNearest(u,list){const c=center(u);let best=[],bd=Infinity;for(const p of list){const d=Math.hypot(p.x-c.x,p.y-c.y);if(d<bd-1e-9){bd=d;best=[p];}else if(Math.abs(d-bd)<1e-9)best.push(p);}return best[Math.floor(Math.random()*best.length)];}
+async function tankFire(G,u,p){
+  const c=center(u),d=Math.hypot(p.x-c.x,p.y-c.y);u.aim=Math.atan2(p.y-c.y,p.x-c.x);u.cd=G.tankReload;
+  fx(G,{k:'flash',x:c.x,y:c.y,a:u.aim,size:u.size,dur:250});
+  const dur=clamp(d*35,180,700);fx(G,{k:'shell',from:[c.x,c.y],to:[p.x,p.y],dur});
+  log(u.owner||null,`${u.owner?u.owner.name+' ':''}전차 포격 → ${p.name} 명중!`,'crash');
+  await sleep(G,dur);
+  await knockback(G,p,p.x-c.x,p.y-c.y,5,'전차 포탄');
+}
+async function apcAdjFire(G,u,fired){
+  const c=center(u);
+  for(const p of targetable(G)){
+    if(fired.has(p)||!adjacent(u,p.x,p.y))continue;fired.add(p);
+    const hits=rollMG();u.aim=Math.atan2(p.y-c.y,p.x-c.x);
+    fx(G,{k:'mg',from:[c.x,c.y],to:[p.x,p.y],dur:550});
+    log(u.owner||null,`${u.owner?u.owner.name+' ':''}장갑차 기관총 10발 → ${p.name} ${hits?hits+'발 명중!':'모두 빗나감'}`,hits?'crash':'');
+    await sleep(G,550);
+    if(hits)await knockback(G,p,p.x-c.x,p.y-c.y,5,'장갑차 기관총');
+    if(G.phase==='over')return;
+  }
+}
+async function unitPhase(G){
+  for(const u of G.units.filter(u=>!u.owner)){
+    if(G.phase==='over')return;
+    await unitAct(G,u);
+  }
+}
+async function unitAct(G,u){
+  if(u.type==='tank'){
+    if(u.cd>0)u.cd--;
+    const tgt=nearestCar(G,u);
+    if(tgt){const path=unitPath(G,u,tgt);const step=path?(path.length?path[0]:null):greedyStep(G,u,tgt);if(step)await moveUnit(G,u,step);}
+    if(u.cd<=0){const ts=tankTargets(G,u);if(ts.length)await tankFire(G,u,pickNearest(u,ts));}
+  }else{
+    const fired=new Set();await apcAdjFire(G,u,fired);
+    for(let i=0;i<3;i++){
+      if(G.phase==='over')return;
+      const tg=nearestCar(G,u);if(!tg)break;
+      const path=unitPath(G,u,tg);const step=path?(path.length?path[0]:null):greedyStep(G,u,tg);
+      if(!step)break;
+      await moveUnit(G,u,step);await apcAdjFire(G,u,fired);
+    }
+  }
+}
+async function humanUnitTurn(G,p){
+  const u=p.unit;ensureVisible(center(u).x,center(u).y);
+  if(u.type==='tank'){
+    if(u.cd>0)u.cd--;
+    const occ=occGrid(G,u);G.uopts=[{x:u.x,y:u.y,stay:true,path:[]}];
+    for(const[dx,dy]of NB8){const nx=u.x+dx,ny=u.y+dy;if(freeForUnit(u.size,nx,ny,occ))G.uopts.push({x:nx,y:ny,path:[[nx,ny]]});}
+    setMsg(p.color,`${p.name} 전차 — 한 칸 움직일 곳을 누르세요 (가운데 = 제자리)`);
+    const o=await waitInput(G,'unitMove');G.uopts=[];
+    if(!o.stay)await moveUnit(G,u,[o.x,o.y]);
+    if(u.cd>0){log(p,`${p.name} 전차 재장전 중 (${u.cd}턴 남음)`);await sleep(G,300);return;}
+    const ts=tankTargets(G,u);
+    if(!ts.length){log(p,`${p.name} 전차 사거리 안에 쏠 차가 없음`);await sleep(G,300);return;}
+    G.targets=ts;setMsg(p.color,`${p.name} 전차 — 사거리 안의 차를 눌러 포탄을 쏘세요`);$('#turnAction').hidden=false;
+    const t=await waitInput(G,'unitFire');$('#turnAction').hidden=true;G.targets=[];
+    if(t)await tankFire(G,u,t);else log(p,`${p.name} 전차가 쏘지 않음`);
+  }else{
+    const fired=new Set();await apcAdjFire(G,u,fired);if(G.phase==='over')return;
+    G.uopts=[{x:u.x,y:u.y,stay:true,path:[]}].concat(unitReach(G,u,3));
+    setMsg(p.color,`${p.name} 장갑차 — 세 칸 안에서 갈 곳을 누르세요 (지나가며 옆 차에 기관총 발사)`);
+    const o=await waitInput(G,'unitMove');G.uopts=[];
+    for(const st of o.path){await moveUnit(G,u,st);await apcAdjFire(G,u,fired);if(G.phase==='over')return;}
+  }
+}
+
+/* ---------- AI cars ---------- */
 function turnsFor(d,s){if(d<=0)return 0;const b=2*s+1;return Math.ceil((-b+Math.sqrt(b*b+8*d))/2);}
 function heur(G,x,y,vx,vy,pr){
   const i=y*(S.map.cols+1)+x,s=Math.max(Math.abs(vx),Math.abs(vy));let d;
   if(G.mode==='race'){const f=G.FR[i];if(f<0)return Infinity;d=f+Math.max(0,G.laps-pr)*G.LAP;}
   else if(G.mode==='gate'){const D=G.DG[pr];const f=D?D[i]:-1;if(f<0)return Infinity;d=f+G.REM[pr];}
-  else{const f=G.DF[i];if(f<0)return Infinity;d=f;}
+  else if(G.mode==='flag'){const f=G.DF[i];if(f<0)return Infinity;d=f;}
+  else return 0;
   let h=turnsFor(d,s);if(G.mode==='flag'&&G.stopRule==='stop'&&s>0)h+=1;return h;
 }
+function progOf(G,p){return G.mode==='race'?p.count:G.mode==='gate'?p.next:0;}
 function stepProg(G,pr,x0,y0,x1,y1,vx,vy){
   if(G.mode==='race'){pr+=crossDelta(S.map.start,x0,y0,x1,y1);return{pr,goal:pr>=G.laps+1};}
   if(G.mode==='gate'){while(pr<G.gates.length&&segInter(x0,y0,x1,y1,G.gates[pr]))pr++;return{pr,goal:pr>=G.gates.length};}
@@ -759,16 +1107,37 @@ function astar(G,p,roots,lv){
   }
   return best?best.root:null;
 }
+function hasEscape(G,o){
+  const accs=oilLock(o.x,o.y,o.vx,o.vy)?[[0,0]]:ACC;
+  return accs.some(([ax,ay])=>{const vx=o.vx+ax,vy=o.vy+ay;return segCheck(o.x,o.y,o.x+vx,o.y+vy)<0&&!inUnitBody(G,o.x+vx,o.y+vy);});
+}
+function warPick(G,p,ok){
+  let best=ok[0],bs=Infinity;
+  for(const o of ok){let s=0;
+    if(o.danger)s+=12;
+    for(const u of G.units){const c=center(u),d=Math.hypot(o.x-c.x,o.y-c.y);
+      if(u.type==='tank'){if(d<=G.tankRange+1.5&&segCheck(c.x,c.y,o.x,o.y)<0)s+=u.cd<=1?7:3;}
+      else{const cx=Math.max(u.x-o.x,0,o.x-(u.x+u.size-1)),cy=Math.max(u.y-o.y,0,o.y-(u.y+u.size-1)),cd=Math.max(cx,cy);if(cd<=1)s+=10;else if(cd<=4)s+=5;}
+      s-=Math.min(d,30)*.08;}
+    if(onBomb(o.x,o.y))s+=2.5;
+    if(!hasEscape(G,o))s+=25;
+    s+=.03*(o.vx*o.vx+o.vy*o.vy)+Math.random()*.5;
+    if(s<bs){bs=s;best=o;}}
+  return best;
+}
 function aiPick(G,p,list){
   const ok=list.filter(o=>o.status==='ok');
   if(!ok.length){const cr=list.filter(o=>o.status==='crash');return cr.reduce((a,b)=>Math.hypot(a.vx,a.vy)<=Math.hypot(b.vx,b.vy)?a:b);}
+  if(G.mode==='war')return warPick(G,p,ok);
   const lv=AI_LV[G.aiLevel]||AI_LV.normal;
-  if(Math.random()<lv.noise)return ok[Math.floor(Math.random()*ok.length)];
-  return astar(G,p,ok,lv)||ok.reduce((a,b)=>Math.hypot(a.vx,a.vy)<=Math.hypot(b.vx,b.vy)?a:b);
+  const safe=ok.filter(o=>!o.danger),pool=safe.length?safe:ok;
+  if(Math.random()<lv.noise)return pool[Math.floor(Math.random()*pool.length)];
+  return astar(G,p,pool,lv)||pool.reduce((a,b)=>Math.hypot(a.vx,a.vy)<=Math.hypot(b.vx,b.vy)?a:b);
 }
 function aiPlace(G,p,free){
+  if(G.mode==='war'){let best=free[0],bs=-Infinity;for(const c of free){let m=Infinity;for(const u of G.units){const k=center(u);m=Math.min(m,Math.hypot(c[0]-k.x,c[1]-k.y));}const s=(isFinite(m)?m:0)+Math.random();if(s>bs){bs=s;best=c;}}return best;}
   let best=[],bh=Infinity;
-  for(const c of free){const pr=G.mode==='race'?(sideOf(S.map.start,c[0],c[1])>0?1:0):0;const h=heur(G,c[0],c[1],0,0,pr)+(G.mode==='race'?0:0);
+  for(const c of free){const pr=G.mode==='race'?(sideOf(S.map.start,c[0],c[1])>0?1:0):0;const h=heur(G,c[0],c[1],0,0,pr);
     const hv=isFinite(h)?h:1e9;if(hv<bh-1e-9){bh=hv;best=[c];}else if(Math.abs(hv-bh)<1e-9)best.push(c);}
   return best[Math.floor(Math.random()*best.length)]||free[0];
 }
@@ -777,126 +1146,219 @@ function aiPlace(G,p,free){
 function updatePanel(){
   const G=S.G;if(!G)return;
   $('#plist').innerHTML=G.players.map((p,i)=>{
-    const cur=G.phase!=='over'&&i===G.cur;
-    const prog=G.mode==='race'?`바퀴 ${Math.max(0,p.count-1)}/${G.laps}`:G.mode==='gate'?`관문 ${p.next}/${G.gates.length}`:`점수 ${p.score}`;
-    const oil=p.placed&&onOil(p.x,p.y);
-    return `<div class="prow${cur?' cur':''}" style="--c:${p.color}"><span class="sw"></span><div class="pn"><b>${esc(p.name)}</b><small>${p.ai?'AI':'사람'}</small></div><div class="pst"><span class="mono">속도 ${fmtV(p.vx,p.vy)}</span><span>${prog}</span>${p.skip>0?`<span class="tag warn">휴식 ${p.skip}턴</span>`:''}${oil?'<span class="tag">기름 위 · 미끄러짐</span>':''}${!p.placed?'<span class="tag">대기</span>':''}</div></div>`;
+    const cur=G.phase!=='over'&&i===G.cur;let stat='';
+    if(p.kind==='car'){
+      const prog=G.mode==='race'?`바퀴 ${Math.max(0,p.count-1)}/${G.laps}`:G.mode==='gate'?`관문 ${p.next}/${G.gates.length}`:G.mode==='flag'?`점수 ${p.score}`:(p.out?'탈락':'생존 중');
+      const oil=p.placed&&!p.out&&onOil(p.x,p.y);
+      stat=`<span class="mono">속도 ${fmtV(p.vx,p.vy)}</span><span>${prog}</span>${p.flip>0?`<span class="tag flip">전복 ${p.flip}턴</span>`:''}${p.skip>0?`<span class="tag warn">휴식 ${p.skip}턴</span>`:''}${oil?'<span class="tag">기름 위</span>':''}${p.placed&&!p.out&&onBomb(p.x,p.y)?'<span class="tag flip">폭격 구역</span>':''}${!p.placed&&!p.out?'<span class="tag">대기</span>':''}`;
+    }else{const u=p.unit;stat=`<span>${UNIT_NAME[p.kind]} ${p.size}×${p.size}</span>${u&&p.kind==='tank'?`<span>${u.cd>0?`재장전 ${u.cd}턴`:'장전 완료'}</span>`:''}${!u?'<span class="tag">대기</span>':''}`;}
+    return `<div class="prow${cur?' cur':''}${p.out?' out':''}" style="--c:${p.color}"><span class="sw"></span><div class="pn"><b>${esc(p.name)}</b><small>${p.kind==='car'?(p.ai?'AI · 자동차':'사람 · 자동차'):'사람 · '+UNIT_NAME[p.kind]}</small></div><div class="pst">${stat}</div></div>`;
   }).join('');
-  $('#turnNo').textContent=G.phase==='place'?'출발 배치':`턴 ${G.turn}`;
+  const nt=G.units.filter(u=>!u.owner&&u.type==='tank').length,na=G.units.filter(u=>!u.owner&&u.type==='apc').length;
+  $('#unitInfo').textContent=(nt||na)?`맵의 자동 전차 ${nt}대 · 장갑차 ${na}대는 모든 플레이어가 움직인 뒤에 움직여요.`:'';
+  $('#turnNo').textContent=G.phase==='place'?'출발 배치':G.mode==='war'?`턴 ${G.turn}/${G.warTurns}`:`턴 ${G.turn}`;
   updatePad();
 }
-function humanTurn(){const G=S.G;return G&&G.phase==='race'&&!G.busy&&!G.players[G.cur].ai;}
 function updatePad(){
-  const G=S.G,can=humanTurn();
+  const G=S.G,can=G&&G.input&&G.input.type==='move';
   $('#pad').innerHTML=ACC.map((a,k)=>{
-    const o=can?G.opts.find(o=>o.ax===a[0]&&o.ay===a[1]):null;
-    const dis=!o||o.status==='blocked';
+    const o=can?G.opts.find(o=>o.ax===a[0]&&o.ay===a[1]):null,dis=!o||o.status==='blocked';
     return `<button data-k="${k}" ${dis?'disabled':''} class="${o&&o.status==='crash'?'crash':''}" aria-label="가속 ${fmtV(a[0],a[1])}">${o&&o.status==='crash'?'✕':ARROW[k]}<small>${PADKEY[k]}</small></button>`;
   }).join('');
 }
 function chooseAcc(k){
-  if(!humanTurn())return;const G=S.G,a=ACC[k];
-  const o=G.opts.find(o=>o.ax===a[0]&&o.ay===a[1]);if(o&&o.status!=='blocked')doMove(G.players[G.cur],o);
+  const G=S.G;if(!G||!G.input||G.input.type!=='move')return;const a=ACC[k];
+  const o=G.opts.find(o=>o.ax===a[0]&&o.ay===a[1]);if(o&&o.status!=='blocked')G.input.res(o);
 }
 
 /* ---------- rendering ---------- */
-function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function rr(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 function drawStart(c,st){
   const ax=X(st.a[0]),ay=Y(st.a[1]),bx=X(st.b[0]),by=Y(st.b[1]),len=Math.hypot(bx-ax,by-ay);if(len<1)return;
   const ux=(bx-ax)/len,uy=(by-ay)/len,fx=st.dir*-uy,fy=st.dir*ux;
-  const sq=Math.max(3.5,S.cell*.26),n=Math.max(2,Math.round(len/sq)),sl=len/n;
+  const sq=Math.max(3,S.zoom*.26),n=Math.max(2,Math.min(400,Math.round(len/sq))),sl=len/n;
   c.save();
   for(let i=0;i<n;i++)for(let r=0;r<2;r++){const o0=(r-1)*sq,o1=r*sq,s0=i*sl,s1=(i+1)*sl;
     c.beginPath();c.moveTo(ax+ux*s0+fx*o0,ay+uy*s0+fy*o0);c.lineTo(ax+ux*s1+fx*o0,ay+uy*s1+fy*o0);c.lineTo(ax+ux*s1+fx*o1,ay+uy*s1+fy*o1);c.lineTo(ax+ux*s0+fx*o1,ay+uy*s0+fy*o1);c.closePath();
     c.fillStyle=((i+r)%2)?C.ink:'#fff';c.fill();}
   c.strokeStyle=C.ink;c.lineWidth=1;c.beginPath();c.moveTo(ax-fx*sq,ay-fy*sq);c.lineTo(bx-fx*sq,by-fy*sq);c.lineTo(bx+fx*sq,by+fy*sq);c.lineTo(ax+fx*sq,ay+fy*sq);c.closePath();c.stroke();
-  const as=Math.max(6,S.cell*.45),mx=(ax+bx)/2+fx*(sq+as*1.2),my=(ay+by)/2+fy*(sq+as*1.2);
+  const as=Math.max(5,S.zoom*.45),mx=(ax+bx)/2+fx*(sq+as*1.2),my=(ay+by)/2+fy*(sq+as*1.2);
   c.beginPath();c.moveTo(mx+fx*as,my+fy*as);c.lineTo(mx-fx*as*.4+ux*as*.75,my-fy*as*.4+uy*as*.75);c.lineTo(mx-fx*as*.4-ux*as*.75,my-fy*as*.4-uy*as*.75);c.closePath();
   c.fillStyle=C.ink;c.fill();c.restore();
 }
 function drawGate(c,g,i,color,alpha,big){
   const ax=X(g.a[0]),ay=Y(g.a[1]),bx=X(g.b[0]),by=Y(g.b[1]);
-  c.save();c.globalAlpha=alpha;c.strokeStyle=color;c.lineWidth=Math.max(2,S.cell*(big?.2:.13));c.lineCap='round';
-  c.setLineDash([Math.max(4,S.cell*.35),Math.max(3,S.cell*.25)]);c.beginPath();c.moveTo(ax,ay);c.lineTo(bx,by);c.stroke();c.setLineDash([]);
+  c.save();c.globalAlpha=alpha;c.strokeStyle=color;c.lineWidth=Math.max(2,S.zoom*(big?.2:.13));c.lineCap='round';
+  c.setLineDash([Math.max(4,S.zoom*.35),Math.max(3,S.zoom*.25)]);c.beginPath();c.moveTo(ax,ay);c.lineTo(bx,by);c.stroke();c.setLineDash([]);
   c.fillStyle=color;for(const[x,y]of[[ax,ay],[bx,by]]){c.beginPath();c.arc(x,y,3,0,7);c.fill();}
-  const r=Math.max(8,S.cell*.42),mx=(ax+bx)/2,my=(ay+by)/2;
+  const r=Math.max(8,S.zoom*.42),mx=(ax+bx)/2,my=(ay+by)/2;
   c.beginPath();c.arc(mx,my,r,0,7);c.fill();c.strokeStyle='#fff';c.lineWidth=2;c.stroke();
   c.fillStyle='#fff';c.font=`700 ${Math.round(r*1.05)}px "IBM Plex Sans KR", sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(i+1,mx,my+.5);
   c.restore();
 }
-function drawFlag(c,f,alpha){
-  const x=X(f[0]),y=Y(f[1]),h=Math.max(12,S.cell*.95);
-  c.save();c.globalAlpha=alpha;c.strokeStyle=C.ink;c.lineWidth=1.5;c.beginPath();c.moveTo(x,y);c.lineTo(x,y-h);c.stroke();
+function drawFlag(c,f){
+  const x=X(f[0]),y=Y(f[1]),h=Math.max(10,S.zoom*.95);
+  c.save();c.strokeStyle=C.ink;c.lineWidth=1.5;c.beginPath();c.moveTo(x,y);c.lineTo(x,y-h);c.stroke();
   c.beginPath();c.moveTo(x,y-h);c.lineTo(x+h*.62,y-h*.78);c.lineTo(x,y-h*.56);c.closePath();c.fillStyle=C.flag;c.fill();c.lineWidth=1;c.stroke();
-  c.beginPath();c.arc(x,y,2.6,0,7);c.fillStyle=C.ink;c.fill();c.restore();
+  c.beginPath();c.arc(x,y,2.4,0,7);c.fillStyle=C.ink;c.fill();c.restore();
 }
 function drawX(c,x,y,r,color,w){c.save();c.strokeStyle=color;c.lineWidth=w||2;c.lineCap='round';c.beginPath();c.moveTo(x-r,y-r);c.lineTo(x+r,y+r);c.moveTo(x+r,y-r);c.lineTo(x-r,y+r);c.stroke();c.restore();}
-function drawCar(c,x,y,ang,color,active,t){
-  const s=Math.max(12,S.cell*.95),L2=s*.56,W2=s*.33;
+function drawCar(c,x,y,ang,color,active,t,state){
+  const s=Math.max(9,S.zoom*.95),L2=s*.56,W2=s*.33;
   c.save();c.translate(x,y);
   if(active){c.beginPath();c.arc(0,0,s*.8+Math.sin(t/240)*2,0,7);c.strokeStyle=color;c.globalAlpha=.5;c.lineWidth=2.2;c.stroke();c.globalAlpha=1;}
   c.rotate(ang);
+  if(state==='out'){c.globalAlpha=.55;color='#7c8394';}
   c.fillStyle='rgba(20,30,50,.2)';rr(c,-L2+1.5,-W2+2,L2*2,W2*2,W2*.6);c.fill();
-  c.fillStyle=color;c.strokeStyle=C.ink;c.lineWidth=1.4;rr(c,-L2,-W2,L2*2,W2*2,W2*.6);c.fill();c.stroke();
-  c.fillStyle='rgba(255,255,255,.9)';rr(c,L2*.12,-W2*.6,L2*.4,W2*1.2,2);c.fill();
-  c.fillStyle='rgba(255,255,255,.4)';c.fillRect(-L2*.85,-1,L2*.9,2);
+  if(state==='flip'){
+    c.fillStyle=C.ink;for(const[wx,wy]of[[-L2*.6,-W2*1.05],[L2*.6,-W2*1.05],[-L2*.6,W2*1.05],[L2*.6,W2*1.05]]){c.beginPath();c.ellipse(wx,wy,L2*.22,W2*.32,0,0,7);c.fill();}
+    c.fillStyle=color;c.strokeStyle=C.ink;c.lineWidth=1.4;rr(c,-L2,-W2,L2*2,W2*2,W2*.6);c.fill();c.stroke();
+    c.fillStyle='rgba(29,41,68,.55)';rr(c,-L2*.7,-W2*.6,L2*1.4,W2*1.2,3);c.fill();
+  }else{
+    c.fillStyle=color;c.strokeStyle=C.ink;c.lineWidth=1.4;rr(c,-L2,-W2,L2*2,W2*2,W2*.6);c.fill();c.stroke();
+    c.fillStyle='rgba(255,255,255,.9)';rr(c,L2*.12,-W2*.6,L2*.4,W2*1.2,2);c.fill();
+    c.fillStyle='rgba(255,255,255,.4)';c.fillRect(-L2*.85,-1,L2*.9,2);
+  }
   c.restore();
-  c.beginPath();c.arc(x,y,2,0,7);c.fillStyle=C.ink;c.fill();
+  if(state==='out')drawX(c,x,y,s*.35,C.crash,2.5);
+  else{c.beginPath();c.arc(x,y,2,0,7);c.fillStyle=C.ink;c.fill();}
 }
+function drawUnit(c,u,ux,uy,t,active){
+  const z=S.zoom,s=u.size,x0=X(ux-.5),y0=Y(uy-.5),w=s*z,cx=x0+w/2,cy=y0+w/2,ow=u.owner?u.owner.color:null;
+  c.save();
+  if(u.type==='apc'){c.setLineDash([4,4]);c.strokeStyle='rgba(200,55,42,.45)';c.lineWidth=1.2;c.strokeRect(X(ux-1.5),Y(uy-1.5),(s+2)*z,(s+2)*z);c.setLineDash([]);}
+  if(active){c.strokeStyle=ow;c.lineWidth=2.5;c.globalAlpha=.55+.25*Math.sin(t/240);c.strokeRect(x0-4,y0-4,w+8,w+8);c.globalAlpha=1;}
+  c.translate(cx,cy);const hd=u.heading||0;c.rotate(Math.round(hd/(Math.PI/2))*(Math.PI/2));
+  const h=w*.46;
+  c.fillStyle='rgba(20,30,50,.22)';rr(c,-h+2,-h+3,h*2,h*2,h*.2);c.fill();
+  if(u.type==='tank'){
+    c.fillStyle=C.olive2;rr(c,-h,-h,h*2,h*.5,h*.15);c.fill();rr(c,-h,h*.5,h*2,h*.5,h*.15);c.fill();
+    c.strokeStyle='rgba(255,255,255,.18)';c.lineWidth=1;for(let i=-4;i<=4;i++){c.beginPath();c.moveTo(i*h/4.5,-h);c.lineTo(i*h/4.5,-h*.5);c.moveTo(i*h/4.5,h*.5);c.lineTo(i*h/4.5,h);c.stroke();}
+    c.fillStyle=ow||C.olive;c.strokeStyle=C.ink;c.lineWidth=1.3;rr(c,-h*.85,-h*.55,h*1.7,h*1.1,h*.15);c.fill();c.stroke();
+  }else{
+    c.fillStyle=C.ink;for(const wx of[-.6,0,.6])for(const wy of[-1,1]){c.beginPath();c.ellipse(wx*h,wy*h*.78,h*.2,h*.16,0,0,7);c.fill();}
+    c.fillStyle=ow||C.apc;c.strokeStyle=C.ink;c.lineWidth=1.3;rr(c,-h,-h*.7,h*2,h*1.4,h*.35);c.fill();c.stroke();
+    c.fillStyle='rgba(255,255,255,.25)';rr(c,h*.35,-h*.5,h*.4,h,h*.12);c.fill();
+  }
+  c.restore();
+  c.save();c.translate(cx,cy);c.rotate(u.aim||0);
+  if(u.type==='tank'){
+    c.strokeStyle=C.ink;c.lineWidth=Math.max(2.5,h*.22);c.lineCap='round';c.beginPath();c.moveTo(0,0);c.lineTo(h*1.25,0);c.stroke();
+    c.fillStyle=ow?shade(ow):C.olive;c.strokeStyle=C.ink;c.lineWidth=1.3;c.beginPath();c.arc(0,0,h*.42,0,7);c.fill();c.stroke();
+  }else{
+    c.strokeStyle=C.ink;c.lineWidth=Math.max(1.6,h*.1);c.beginPath();c.moveTo(0,0);c.lineTo(h*.9,0);c.stroke();
+    c.fillStyle=C.apc2;c.beginPath();c.arc(0,0,h*.24,0,7);c.fill();
+  }
+  c.restore();
+  if(u.type==='tank'&&u.cd>0&&z*s>=14){c.save();c.font=`600 ${Math.max(9,Math.round(z*.42))}px "IBM Plex Mono", monospace`;c.textAlign='center';c.textBaseline='middle';
+    c.lineWidth=3;c.strokeStyle='#fff';c.fillStyle=C.ink;const tx=cx,ty=y0-Math.max(7,z*.35);c.strokeText('장전 '+u.cd,tx,ty);c.fillText('장전 '+u.cd,tx,ty);c.restore();}
+}
+function shade(hex){const n=parseInt(hex.slice(1),16),r=(n>>16)*.7|0,g=((n>>8)&255)*.7|0,b=(n&255)*.7|0;return `rgb(${r},${g},${b})`;}
+function drawB2(c,x,y,a,scale){
+  c.save();c.translate(x,y);c.rotate(a);c.scale(scale,scale);
+  c.beginPath();c.moveTo(1,0);c.lineTo(-.55,-1.1);c.lineTo(-.7,-.85);c.lineTo(-.45,-.55);c.lineTo(-.7,-.28);c.lineTo(-.45,0);c.lineTo(-.7,.28);c.lineTo(-.45,.55);c.lineTo(-.7,.85);c.lineTo(-.55,1.1);c.closePath();
+  c.fillStyle='#2a2f3a';c.fill();c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=.04;c.stroke();c.restore();
+}
+function drawFx(c,G,t){
+  G.fx=G.fx.filter(f=>t-f.t0<f.dur);
+  for(const f of G.fx){const k=clamp((t-f.t0)/f.dur,0,1);
+    if(f.k==='shell'){const x=f.from[0]+(f.to[0]-f.from[0])*k,y=f.from[1]+(f.to[1]-f.from[1])*k;
+      c.save();c.strokeStyle='rgba(29,41,68,.35)';c.lineWidth=2;c.beginPath();c.moveTo(X(f.from[0]+(f.to[0]-f.from[0])*Math.max(0,k-.25)),Y(f.from[1]+(f.to[1]-f.from[1])*Math.max(0,k-.25)));c.lineTo(X(x),Y(y));c.stroke();
+      c.fillStyle=C.ink;c.beginPath();c.arc(X(x),Y(y),Math.max(3,S.zoom*.16),0,7);c.fill();c.restore();}
+    else if(f.k==='mg'){c.save();c.strokeStyle=C.tracer;c.lineWidth=1.6;
+      for(let i=0;i<3;i++){if(Math.random()<.35)continue;const j=.6;const tx=f.to[0]+(Math.random()-.5)*j,ty=f.to[1]+(Math.random()-.5)*j;c.beginPath();c.moveTo(X(f.from[0]),Y(f.from[1]));c.lineTo(X(tx),Y(ty));c.stroke();}
+      c.fillStyle='rgba(255,207,46,.9)';c.beginPath();c.arc(X(f.from[0]),Y(f.from[1]),Math.max(3,S.zoom*.2)*(.6+Math.random()*.6),0,7);c.fill();c.restore();}
+    else if(f.k==='flash'){c.save();c.globalAlpha=1-k;c.fillStyle='#ffcf2e';const r=S.zoom*f.size*.45+S.zoom*.6;c.beginPath();c.arc(X(f.x)+Math.cos(f.a)*r,Y(f.y)+Math.sin(f.a)*r,S.zoom*.5*(1+k),0,7);c.fill();c.restore();}
+    else if(f.k==='boom'){c.save();const R=S.zoom*(f.big?2.2:1.2);c.globalAlpha=1-k;
+      c.fillStyle='#ff8a3d';c.beginPath();c.arc(X(f.x),Y(f.y),R*(.4+k),0,7);c.fill();
+      c.fillStyle='#ffd23f';c.beginPath();c.arc(X(f.x),Y(f.y),R*(.25+k*.5),0,7);c.fill();
+      c.strokeStyle=C.ink;c.lineWidth=1.5;c.beginPath();c.arc(X(f.x),Y(f.y),R*(.5+k*1.2),0,7);c.stroke();c.restore();}
+    else if(f.k==='b2'){const span=Math.max(VW,VH)/S.zoom*.7+6,x=f.x-span/2+span*k,y=f.y-span*.12+span*.24*k,sc=Math.max(30,S.zoom*3);
+      c.save();c.globalAlpha=.25;drawB2(c,X(x)+sc*.4,Y(y)+sc*.5,0.24,sc);c.restore();
+      drawB2(c,X(x),Y(y),0.24,sc);
+      if(k>.45&&k<.7){c.save();c.fillStyle=C.ink;const n=4;for(let i=0;i<n;i++){const bx=f.x+(i-1.5)*.5,by=f.y-(1-(k-.45)/.25)*3;c.beginPath();c.ellipse(X(bx),Y(by),3,5,0,0,7);c.fill();}c.restore();}}
+  }
+}
+function lerpPos(a,k){return[a.from[0]+(a.to[0]-a.from[0])*k,a.from[1]+(a.to[1]-a.from[1])*k];}
 function render(t){
-  const c=bctx;c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,CW,CH);
-  if(L.cache)c.drawImage(L.cache.cv,0,0,CW,CH);
+  const c=bctx;c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,VW,VH);
+  if(L.cache)c.drawImage(L.cache.cv,0,0,VW,VH);
   const G=S.G,play=S.view==='play'&&G,mp=S.map;
   const mode=play?G.mode:(S.view==='setup'?S.setup.mode:'all');
   if(mode==='all'||mode==='gate'){
-    const list=play?G.gates:mp.gates;
-    let cp=play&&G.phase==='race'?G.players[G.cur]:null;
-    list.forEach((g,i)=>{let col=C.gate,a=1,big=false;if(cp){if(i<cp.next){col=C.ink2;a=.35;}else if(i===cp.next){col=cp.color;big=true;}}drawGate(c,g,i,col,a,big);});
+    const list=play?G.gates:mp.gates;const cp=play&&G.phase==='race'?G.players[G.cur]:null;
+    list.forEach((g,i)=>{let col=C.gate,a=1,big=false;if(cp&&cp.kind==='car'){if(i<cp.next){col=C.ink2;a=.35;}else if(i===cp.next){col=cp.color;big=true;}}drawGate(c,g,i,col,a,big);});
   }
   if(mp.start)drawStart(c,mp.start);
-  if(mode==='all'||mode==='flag')(play?G.flags:mp.flags).forEach(f=>drawFlag(c,f,1));
+  if(mode==='all'||mode==='flag')(play?G.flags:mp.flags).forEach(f=>drawFlag(c,f));
   if(play){
-    if(G.anim){const a=G.anim;const k=Math.min(1,(t-a.t0)/a.dur);a.k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;if(k>=1){G.anim=null;a.cb();}}
-    for(const m of G.marks)drawX(c,X(m[0]),Y(m[1]),Math.max(4,S.cell*.3),C.crash,2.4);
+    if(G.anim){const a=G.anim;const k=Math.min(1,(t-a.t0)/a.dur);a.k=a.spin?1-Math.pow(1-k,3):(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2);if(k>=1){G.anim=null;a.res();}}
+    if(G.uanim){const a=G.uanim;const k=Math.min(1,(t-a.t0)/a.dur);a.k=k;if(k>=1){G.uanim=null;a.res();}}
+    const cp=G.cur>=0?G.players[G.cur]:null,inp=G.input;
+    for(const m of G.marks)drawX(c,X(m[0]),Y(m[1]),Math.max(3,S.zoom*.3),C.crash,2.2);
     for(const p of G.players){
-      if(!p.placed)continue;
-      c.save();c.strokeStyle=p.color;c.lineWidth=2;c.globalAlpha=.85;c.lineJoin='round';c.beginPath();
+      if(p.kind!=='car'||!p.placed)continue;
+      c.save();c.strokeStyle=p.color;c.lineWidth=2;c.globalAlpha=p.out?.35:.85;c.lineJoin='round';c.beginPath();
       p.trail.forEach((q,i)=>i?c.lineTo(X(q[0]),Y(q[1])):c.moveTo(X(q[0]),Y(q[1])));c.stroke();
-      c.fillStyle=p.color;for(const q of p.trail){c.beginPath();c.arc(X(q[0]),Y(q[1]),2.4,0,7);c.fill();}
+      if(S.zoom>=5){c.fillStyle=p.color;for(const q of p.trail){c.beginPath();c.arc(X(q[0]),Y(q[1]),2.2,0,7);c.fill();}}
       c.setLineDash([4,4]);c.strokeStyle=C.crash;c.lineWidth=1.4;for(const f of p.fails){c.beginPath();c.moveTo(X(f[0][0]),Y(f[0][1]));c.lineTo(X(f[1][0]),Y(f[1][1]));c.stroke();}
+      c.strokeStyle=C.ink2;c.setLineDash([2,5]);for(const f of p.knocks){c.beginPath();c.moveTo(X(f[0][0]),Y(f[0][1]));c.lineTo(X(f[1][0]),Y(f[1][1]));c.stroke();}
       c.restore();
     }
-    const cp=G.players[G.cur];
-    if(G.phase==='place'&&!G.busy&&cp&&!cp.ai){
+    for(const u of G.units){let ux=u.x,uy=u.y;if(G.uanim&&G.uanim.u===u)[ux,uy]=lerpPos(G.uanim,G.uanim.k);drawUnit(c,u,ux,uy,t,cp&&cp.unit===u&&G.phase!=='over');}
+    if(inp&&inp.type==='placeCar'&&cp){
       for(const q of G.free){const hov=S.cursor&&Math.hypot(S.cursor.x-q[0],S.cursor.y-q[1])<.55;
-        c.beginPath();c.arc(X(q[0]),Y(q[1]),Math.max(4,S.cell*.3)*(hov?1.25:1),0,7);c.fillStyle=hov?cp.color:'#fff';c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();}
+        c.beginPath();c.arc(X(q[0]),Y(q[1]),Math.max(4,S.zoom*.3)*(hov?1.25:1),0,7);c.fillStyle=hov?cp.color:'#fff';c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();}
     }
-    if(G.phase==='race'&&cp&&!cp.skip&&!G.anim&&(G.opts.length)){
+    if(inp&&inp.type==='placeUnit'&&cp&&S.cursor){
+      const s=cp.size,[x,y]=unitAtCursor(S.cursor,s),ok=freeForUnit(s,x,y,occGrid(G,null));
+      c.save();c.fillStyle=ok?'rgba(22,154,85,.25)':'rgba(200,55,42,.25)';c.strokeStyle=ok?'#169a55':C.crash;c.lineWidth=2;c.setLineDash([5,4]);
+      c.fillRect(X(x-.5),Y(y-.5),s*S.zoom,s*S.zoom);c.strokeRect(X(x-.5),Y(y-.5),s*S.zoom,s*S.zoom);c.restore();
+    }
+    if(inp&&inp.type==='move'&&cp){
       const px=X(cp.x),py=Y(cp.y),cx=X(cp.x+cp.vx),cy=Y(cp.y+cp.vy);
       if(cp.vx||cp.vy){c.save();c.setLineDash([3,4]);c.strokeStyle=cp.color;c.globalAlpha=.6;c.lineWidth=1.5;c.beginPath();c.moveTo(px,py);c.lineTo(cx,cy);c.stroke();c.restore();}
-      const human=!cp.ai&&!G.busy;
-      if(human){
-        const h=G.opts[S.hover];
-        if(h&&h.status!=='blocked'){c.save();c.strokeStyle=h.status==='crash'?C.crash:cp.color;c.lineWidth=2.5;c.setLineDash([6,4]);c.beginPath();c.moveTo(px,py);
-          c.lineTo(X(h.status==='crash'?h.cx:h.x),Y(h.status==='crash'?h.cy:h.y));c.stroke();c.restore();}
-        const r=Math.max(4,S.cell*.3);
-        G.opts.forEach((o,i)=>{const ox=X(o.x),oy=Y(o.y),hov=i===S.hover;
-          if(o.status==='blocked'){c.beginPath();c.arc(ox,oy,r*.55,0,7);c.fillStyle='rgba(86,99,125,.45)';c.fill();return;}
-          if(o.status==='crash'){drawX(c,ox,oy,r*(hov?1:.75),C.crash,hov?3:2);return;}
-          c.beginPath();c.arc(ox,oy,r*(hov?1.25:1),0,7);c.fillStyle=hov?cp.color:'#fff';c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();});
-      }
+      const h=G.opts[S.hover];
+      if(h&&h.status!=='blocked'){c.save();c.strokeStyle=h.status==='crash'?C.crash:cp.color;c.lineWidth=2.5;c.setLineDash([6,4]);c.beginPath();c.moveTo(px,py);c.lineTo(X(h.status==='crash'?h.cx:h.x),Y(h.status==='crash'?h.cy:h.y));c.stroke();c.restore();}
+      const r=Math.max(4,S.zoom*.3);
+      G.opts.forEach((o,i)=>{const ox=X(o.x),oy=Y(o.y),hov=i===S.hover;
+        if(o.status==='blocked'){c.beginPath();c.arc(ox,oy,r*.55,0,7);c.fillStyle='rgba(86,99,125,.45)';c.fill();return;}
+        if(o.status==='crash'){drawX(c,ox,oy,r*(hov?1:.75),C.crash,hov?3:2);return;}
+        if(o.danger){c.save();c.setLineDash([3,3]);c.strokeStyle='#e8762c';c.lineWidth=2;c.beginPath();c.arc(ox,oy,r*1.7,0,7);c.stroke();c.restore();}
+        c.beginPath();c.arc(ox,oy,r*(hov?1.25:1),0,7);c.fillStyle=hov?cp.color:'#fff';c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();});
     }
-    for(const p of G.players){if(!p.placed&&!(G.anim&&G.anim.p===p))continue;
+    if(inp&&inp.type==='unitMove'&&cp&&cp.unit){
+      const s=cp.unit.size;
+      G.uopts.forEach((o,i)=>{const hov=i===S.hover,ocx=o.x+(s-1)/2,ocy=o.y+(s-1)/2;
+        if(hov){c.save();c.fillStyle='rgba(255,255,255,.35)';c.strokeStyle=cp.color;c.lineWidth=2.5;c.setLineDash([6,4]);c.fillRect(X(o.x-.5),Y(o.y-.5),s*S.zoom,s*S.zoom);c.strokeRect(X(o.x-.5),Y(o.y-.5),s*S.zoom,s*S.zoom);c.restore();}
+        c.beginPath();c.arc(X(ocx),Y(ocy),Math.max(3.5,S.zoom*.22)*(hov?1.3:1),0,7);c.fillStyle=o.stay?cp.color:(hov?cp.color:'#fff');c.fill();c.strokeStyle=cp.color;c.lineWidth=2;c.stroke();});
+    }
+    if(inp&&inp.type==='unitFire'&&cp&&cp.unit){
+      const u=cp.unit,k=center(u);c.save();c.strokeStyle=cp.color;c.globalAlpha=.6;c.setLineDash([6,5]);c.lineWidth=1.5;c.beginPath();c.arc(X(k.x),Y(k.y),G.tankRange*S.zoom,0,7);c.stroke();c.restore();
+      G.targets.forEach((p,i)=>{const hov=i===S.hover,x=X(p.x),y=Y(p.y),r=Math.max(10,S.zoom*.8)*(hov?1.2:1);
+        c.save();c.strokeStyle=C.crash;c.lineWidth=hov?3:2;c.beginPath();c.arc(x,y,r,0,7);c.moveTo(x-r*1.4,y);c.lineTo(x-r*.5,y);c.moveTo(x+r*.5,y);c.lineTo(x+r*1.4,y);c.moveTo(x,y-r*1.4);c.lineTo(x,y-r*.5);c.moveTo(x,y+r*.5);c.lineTo(x,y+r*1.4);c.stroke();
+        if(hov){c.setLineDash([5,4]);c.beginPath();c.moveTo(X(k.x),Y(k.y));c.lineTo(x,y);c.stroke();}c.restore();});
+    }
+    for(const p of G.players){
+      if(p.kind!=='car')continue;
+      const an=G.anim&&G.anim.p===p;if(!p.placed&&!an)continue;
       let x=X(p.x),y=Y(p.y),ang=p.heading;
-      if(G.anim&&G.anim.p===p){const a=G.anim;x=X(a.from[0]+(a.to[0]-a.from[0])*a.k);y=Y(a.from[1]+(a.to[1]-a.from[1])*a.k);
-        if(a.to[0]!==a.from[0]||a.to[1]!==a.from[1]){const fw=Math.atan2(a.to[1]-a.from[1],a.to[0]-a.from[0]);ang=Math.abs(((fw-p.heading+Math.PI*3)%(Math.PI*2))-Math.PI)>Math.PI*.6?p.heading:fw;}}
-      drawCar(c,x,y,ang,p.color,G.phase!=='over'&&p===cp,t);}
-  }else if(S.view==='edit'){
-    const d=S.drag,g=S.cursor;
-    if(d&&(d.type==='start'||d.type==='gate')){c.save();c.strokeStyle=d.type==='gate'?C.gate:C.ink;c.lineWidth=3;c.setLineDash([6,4]);c.beginPath();c.moveTo(X(d.a[0]),Y(d.a[1]));c.lineTo(X(d.b[0]),Y(d.b[1]));c.stroke();c.restore();}
-    if(g){
-      if(BRUSH_K[S.tool]){c.save();c.beginPath();c.arc(X(g.x),Y(g.y),S.brush*S.cell,0,7);c.strokeStyle=S.tool.startsWith('oil')?C.oil:C.ink;c.setLineDash([4,3]);c.lineWidth=1.3;c.stroke();c.restore();}
-      else{const p=snapPt(g);c.beginPath();c.arc(X(p[0]),Y(p[1]),4,0,7);c.fillStyle=S.tool==='gate'?C.gate:S.tool==='flag'?C.flag:C.ink;c.fill();}
+      if(an){const a=G.anim,q=lerpPos(a,a.k);x=X(q[0]);y=Y(q[1]);
+        if(a.spin)ang=p.heading+a.k*Math.PI*4;
+        else if(a.to[0]!==a.from[0]||a.to[1]!==a.from[1]){const fw=Math.atan2(a.to[1]-a.from[1],a.to[0]-a.from[0]);ang=Math.abs(((fw-p.heading+Math.PI*3)%(Math.PI*2))-Math.PI)>Math.PI*.6?p.heading:fw;}}
+      drawCar(c,x,y,ang,p.color,G.phase!=='over'&&p===cp,t,p.out?'out':(p.flip>0&&!an)?'flip':'');
+    }
+    drawFx(c,G,t);
+  }else if(S.view!=='play'){
+    for(const u of mp.units)drawUnit(c,Object.assign({owner:null,cd:0,aim:-Math.PI/2,heading:0},u),u.x,u.y,t,false);
+    if(S.view==='edit'){
+      const d=S.drag,g=S.cursor;
+      if(d&&(d.type==='start'||d.type==='gate')){c.save();c.strokeStyle=d.type==='gate'?C.gate:C.ink;c.lineWidth=3;c.setLineDash([6,4]);c.beginPath();c.moveTo(X(d.a[0]),Y(d.a[1]));c.lineTo(X(d.b[0]),Y(d.b[1]));c.stroke();c.restore();}
+      if(g&&!S.panning){
+        if(BRUSH_K[S.tool]){c.save();c.beginPath();c.arc(X(g.x),Y(g.y),S.brush*S.zoom,0,7);c.strokeStyle=S.tool.startsWith('oil')?C.oil:S.tool.startsWith('bomb')?'#d9853f':C.ink;c.setLineDash([4,3]);c.lineWidth=1.3;c.stroke();c.restore();}
+        else if(S.tool==='tank'||S.tool==='apc'){const s=S.unitSize,[x,y]=unitAtCursor(g,s);c.save();c.strokeStyle=S.tool==='tank'?C.olive:C.apc;c.lineWidth=2;c.setLineDash([5,4]);c.strokeRect(X(x-.5),Y(y-.5),s*S.zoom,s*S.zoom);c.restore();}
+        else if(S.tool!=='hand'){const p=snapPt(g);c.beginPath();c.arc(X(p[0]),Y(p[1]),4,0,7);c.fillStyle=S.tool==='gate'?C.gate:S.tool==='flag'?C.flag:C.ink;c.fill();}
+      }
     }
   }
   requestAnimationFrame(render);
@@ -904,35 +1366,72 @@ function render(t){
 
 /* ---------- views ---------- */
 function setEditMsg(){
-  if(S.view==='edit')setMsg(null,`맵 만들기 — ${({track:'트랙 붓',erase:'지우개',oil:'기름',oilerase:'기름 지우기',start:'출발선',flag:'깃발',gate:'관문'})[S.tool]}: ${TOOL_HINT[S.tool]}`);
-  else if(S.view==='setup')setMsg(null,'게임 유형과 플레이어를 고르고 레이스를 시작하세요.');
+  if(S.view==='edit')setMsg(null,`맵 만들기 — ${TOOLS[S.tool].n}: ${TOOLS[S.tool].h}`);
+  else if(S.view==='setup')setMsg(null,'게임 유형과 플레이어를 고르고 게임을 시작하세요.');
 }
 function setView(v){
   if(v==='play'&&!S.G)return;
-  if(v!=='play'&&S.G){clearTimeout(S.G.timer);S.G=null;$('#tabPlay').disabled=true;$('#overlay').hidden=true;$('#turnNo').textContent='';}
+  if(v!=='play'&&S.G){S.G.dead=true;S.G=null;$('#tabPlay').disabled=true;$('#overlay').hidden=true;$('#turnNo').textContent='';$('#turnAction').hidden=true;}
   S.view=v;S.drag=null;
   document.querySelectorAll('.steps button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));
   $('#pEdit').hidden=v!=='edit';$('#pSetup').hidden=v!=='setup';$('#pPlay').hidden=v!=='play';
-  board.style.cursor=v==='edit'?'crosshair':'pointer';
+  board.style.cursor=v==='edit'?(S.tool==='hand'?'grab':'crosshair'):'pointer';
   if(v==='setup'){renderModeOpts();renderSlots();}
   setEditMsg();
 }
 
-/* ---------- events ---------- */
-board.addEventListener('pointerdown',e=>{const g=toGrid(e);S.cursor=g;
-  if(S.view==='edit')editDown(g,e);
-  else if(S.view==='play'){const G=S.G;if(!G||G.busy||G.phase==='over')return;const p=G.players[G.cur];if(p.ai)return;
-    if(G.phase==='place'){const c=G.free.find(q=>Math.hypot(q[0]-g.x,q[1]-g.y)<.55);if(c)place(p,c);return;}
-    let bi=-1,bd=.55;G.opts.forEach((o,i)=>{const d=Math.hypot(o.x-g.x,o.y-g.y);if(d<bd){bd=d;bi=i;}});
-    const o=G.opts[bi];if(o&&o.status!=='blocked')doMove(p,o);}
+/* ---------- input ---------- */
+function nearestIdx(list,g,fn,lim){let bi=-1,bd=lim;list.forEach((o,i)=>{const p=fn(o),d=Math.hypot(p[0]-g.x,p[1]-g.y);if(d<bd){bd=d;bi=i;}});return bi;}
+function hoverIdx(G,g){
+  const inp=G.input;if(!inp)return -1;
+  if(inp.type==='move')return nearestIdx(G.opts,g,o=>[o.x,o.y],.55);
+  if(inp.type==='unitMove'){const s=G.players[G.cur].unit.size;return nearestIdx(G.uopts,g,o=>[o.x+(s-1)/2,o.y+(s-1)/2],Math.max(.6,s*.5));}
+  if(inp.type==='unitFire')return nearestIdx(G.targets,g,p=>[p.x,p.y],.9);
+  return -1;
+}
+function playClick(g){
+  const G=S.G;if(!G||!G.input)return;const inp=G.input,p=G.players[G.cur];
+  if(inp.type==='placeCar'){const c=G.free.find(q=>Math.hypot(q[0]-g.x,q[1]-g.y)<.55);if(c)inp.res(c);}
+  else if(inp.type==='placeUnit'){const s=p.size,[x,y]=unitAtCursor(g,s);if(freeForUnit(s,x,y,occGrid(G,null)))inp.res([x,y]);else setMsg(p.color,`거기는 놓을 수 없어요 — ${UNIT_NAME[p.kind]} ${s}×${s}가 들어갈 트랙 위 빈 곳을 고르세요`);}
+  else if(inp.type==='move'){const i=hoverIdx(G,g),o=G.opts[i];if(o&&o.status!=='blocked')inp.res(o);}
+  else if(inp.type==='unitMove'){const i=hoverIdx(G,g);if(i>=0)inp.res(G.uopts[i]);}
+  else if(inp.type==='unitFire'){const i=hoverIdx(G,g);if(i>=0)inp.res(G.targets[i]);}
+}
+const ptrs=new Map();let gest=null;
+board.addEventListener('contextmenu',e=>e.preventDefault());
+board.addEventListener('wheel',e=>{e.preventDefault();const s=toScreen(e);zoomAt(e.deltaY<0?1.15:1/1.15,s.x,s.y);},{passive:false});
+board.addEventListener('pointerdown',e=>{
+  const s=toScreen(e);ptrs.set(e.pointerId,s);try{board.setPointerCapture(e.pointerId);}catch(_){}
+  if(ptrs.size===2){if(S.drag&&S.drag.type==='paint'){S.drag=null;autosave();}
+    const[a,b]=[...ptrs.values()];gest={type:'pinch',d0:Math.hypot(a.x-b.x,a.y-b.y),z0:S.zoom,m0:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},cam0:[S.camX,S.camY]};return;}
+  if(ptrs.size>2)return;
+  const g=toGrid(e);S.cursor=g;
+  const panBtn=e.button===1||e.button===2||(S.view==='edit'&&S.tool==='hand');
+  if(S.view==='edit'&&!panBtn){editDown(g);gest=null;return;}
+  gest={type:'pan',sx:s.x,sy:s.y,cam0:[S.camX,S.camY],moved:false,click:!panBtn||S.view!=='edit',g};
+  if(S.view==='edit')board.style.cursor='grabbing';
 });
-board.addEventListener('pointermove',e=>{const g=toGrid(e);S.cursor=g;
+board.addEventListener('pointermove',e=>{
+  const s=toScreen(e);if(ptrs.has(e.pointerId))ptrs.set(e.pointerId,s);
+  if(gest&&gest.type==='pinch'&&ptrs.size===2){const[a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+    const z=clamp(gest.z0*d/Math.max(1,gest.d0),1,60);const gx=(gest.m0.x-gest.cam0[0])/gest.z0,gy=(gest.m0.y-gest.cam0[1])/gest.z0;
+    S.zoom=z;S.camX=m.x-gx*z;S.camY=m.y-gy*z;schedCompose();return;}
+  const g=toGrid(e);S.cursor=g;
+  if(gest&&gest.type==='pan'&&ptrs.has(e.pointerId)){const dx=s.x-gest.sx,dy=s.y-gest.sy;if(!gest.moved&&Math.hypot(dx,dy)>6)gest.moved=true;
+    if(gest.moved){S.panning=true;S.camX=gest.cam0[0]+dx;S.camY=gest.cam0[1]+dy;schedCompose();}return;}
   if(S.view==='edit')editMove(g);
-  else if(S.view==='play'&&S.G){let bi=-1,bd=.55;S.G.opts.forEach((o,i)=>{const d=Math.hypot(o.x-g.x,o.y-g.y);if(d<bd){bd=d;bi=i;}});S.hover=bi;}
+  else if(S.view==='play'&&S.G)S.hover=hoverIdx(S.G,g);
 });
-board.addEventListener('pointerup',()=>{if(S.view==='edit')editUp();});
-board.addEventListener('pointercancel',()=>{if(S.view==='edit')editUp();});
-board.addEventListener('pointerleave',()=>{if(!S.drag){S.cursor=null;S.hover=-1;}});
+function endPtr(e){
+  ptrs.delete(e.pointerId);
+  if(gest&&gest.type==='pinch'){if(ptrs.size<2)gest=null;return;}
+  if(gest&&gest.type==='pan'){const was=gest;gest=null;S.panning=false;if(S.view==='edit')board.style.cursor=S.tool==='hand'?'grab':'crosshair';
+    if(!was.moved&&was.click&&S.view==='play'&&e.type==='pointerup')playClick(was.g);return;}
+  if(S.view==='edit')editUp();
+}
+board.addEventListener('pointerup',endPtr);
+board.addEventListener('pointercancel',endPtr);
+board.addEventListener('pointerleave',()=>{if(!S.drag&&!gest){S.cursor=null;S.hover=-1;}});
 document.addEventListener('keydown',e=>{
   if(e.target.matches&&e.target.matches('input,select,textarea'))return;
   if(S.view==='play'){const k=PADKEY.indexOf(e.key);if(k>=0){e.preventDefault();chooseAcc(k);}}
@@ -940,37 +1439,45 @@ document.addEventListener('keydown',e=>{
 });
 $('#pad').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled)chooseAcc(+b.dataset.k);});
 $('#pad').addEventListener('mouseover',e=>{const b=e.target.closest('button');if(!b||!S.G)return;const a=ACC[+b.dataset.k];S.hover=S.G.opts.findIndex(o=>o.ax===a[0]&&o.ay===a[1]);});
+$('#turnAction').onclick=()=>{const G=S.G;if(G&&G.input&&G.input.type==='unitFire')G.input.res(null);};
+$('#zIn').onclick=()=>zoomAt(1.3,VW/2,VH/2);
+$('#zOut').onclick=()=>zoomAt(1/1.3,VW/2,VH/2);
+$('#zFit').onclick=fitView;
 document.querySelectorAll('.steps button').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>setView(b.dataset.goto));
 document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
 document.querySelectorAll('input[name=mode]').forEach(r=>r.onchange=()=>{S.setup.mode=r.value;renderModeOpts();});
 $('#brush').oninput=e=>{S.brush=+e.target.value;$('#brushOut').textContent=S.brush+'칸';};
-['gCols','gRows','gCell'].forEach(id=>$('#'+id).oninput=updateGridInfo);
 $('#gApply').onclick=applyGrid;
-function doUndo(){const s=S.undo.pop();if(!s){$('#mStatus').textContent='더 되돌릴 게 없어요.';return;}const m=JSON.parse(s);setMap(m);autosave();$('#mStatus').textContent='한 단계 되돌렸어요.';}
+function doUndo(){const s=S.undo.pop();if(!s){$('#mStatus').textContent='더 되돌릴 게 없어요.';return;}setMap(JSON.parse(s));autosave();$('#mStatus').textContent='한 단계 되돌렸어요.';}
 $('#mUndo').onclick=doUndo;
-$('#mDefault').onclick=()=>{pushUndo();const m=defaultMap();const s=Math.min(S.cell,Math.floor(1414/m.cols),Math.floor(1000/m.rows));setMap(m,s);autosave();$('#mStatus').textContent='기본 맵을 불러왔어요.';};
-$('#mSave').onclick=()=>{$('#mStatus').textContent=store.set('mg-slot',JSON.stringify({map:S.map,cell:S.cell}))?'이 브라우저에 맵을 저장했어요.':'이 브라우저에서는 저장할 수 없어요.';};
-$('#mLoad').onclick=()=>{const s=store.get('mg-slot');if(!s){$('#mStatus').textContent='저장한 맵이 없어요.';return;}try{const o=JSON.parse(s);pushUndo();setMap(o.map,o.cell);autosave();$('#mStatus').textContent='저장한 맵을 불러왔어요.';}catch(e){$('#mStatus').textContent='저장한 맵을 읽지 못했어요.';}};
+$('#mDefault').onclick=()=>{pushUndo();setMap(defaultMap());fitView();autosave();$('#mStatus').textContent='기본 맵을 불러왔어요.';};
+$('#mSave').onclick=()=>{$('#mStatus').textContent=store.set('mg-slot',JSON.stringify({map:S.map}))?'이 브라우저에 맵을 저장했어요.':'이 브라우저에서는 저장할 수 없어요.';};
+$('#mLoad').onclick=()=>{const s=store.get('mg-slot');if(!s){$('#mStatus').textContent='저장한 맵이 없어요.';return;}try{const o=JSON.parse(s);pushUndo();setMap(o.map);fitView();autosave();$('#mStatus').textContent='저장한 맵을 불러왔어요.';}catch(e){$('#mStatus').textContent='저장한 맵을 읽지 못했어요.';}};
 let clearArm=0;
 $('#mClear').onclick=()=>{const b=$('#mClear');
   if(Date.now()-clearArm>3000){clearArm=Date.now();b.textContent='한 번 더 누르면 지워져요';setTimeout(()=>{b.textContent='전체 지우기';},3000);return;}
-  clearArm=0;b.textContent='전체 지우기';pushUndo();setMap({cols:S.map.cols,rows:S.map.rows,strokes:[],start:null,flags:[],gates:[]});autosave();$('#mStatus').textContent='맵을 비웠어요. 되돌리기로 복구할 수 있어요.';};
+  clearArm=0;b.textContent='전체 지우기';pushUndo();setMap({cols:S.map.cols,rows:S.map.rows,strokes:[],start:null,flags:[],gates:[],units:[]});autosave();$('#mStatus').textContent='맵을 비웠어요. 되돌리기로 복구할 수 있어요.';};
 $('#aiLevel').onchange=e=>S.setup.ai=e.target.value;
+$('#animSpeed').onchange=e=>{S.setup.anim=+e.target.value;if(S.G)S.G.speed=S.setup.anim;};
 $('#startBtn').onclick=startGame;
 $('#restart').onclick=startGame;
 $('#again').onclick=startGame;
 $('#quit').onclick=()=>setView('edit');
 $('#toEdit').onclick=()=>setView('edit');
-$('#endNow').onclick=()=>{if(S.G&&S.G.phase!=='over'){clearTimeout(S.G.timer);S.G.anim=null;finishFlags();}};
+$('#endNow').onclick=()=>{const G=S.G;if(G&&G.phase!=='over'){G.anim=null;G.uanim=null;finishFlags(G);G.dead=true;}};
 
 /* ---------- boot ---------- */
 let initial=null;
-try{const s=store.get('mg-auto');if(s){const o=JSON.parse(s);if(o&&o.map&&o.map.cols&&Array.isArray(o.map.strokes))initial=o;}}catch(e){}
-if(!initial)initial={map:defaultMap(),cell:18};
-S.cell=initial.cell||18;S.map=initial.map;
-allocLayers();rebuildLayers();syncGridInputs();
+try{const s=store.get('mg-auto');if(s){const o=JSON.parse(s);if(o&&o.map&&o.map.cols&&Array.isArray(o.map.strokes))initial=o.map;}}catch(e){}
+S.map=normMap(initial||defaultMap());
+if(S.map.cols>MAXC)S.map.cols=MAXC;if(S.map.rows>MAXR)S.map.rows=MAXR;
+allocMasks();rebuildMasks();
+resizeBoard();
+if(window.ResizeObserver)new ResizeObserver(()=>resizeBoard()).observe(holder);else window.addEventListener('resize',resizeBoard);
+syncGridInputs();
 $('#brush').value=S.brush;$('#brushOut').textContent=S.brush+'칸';$('#aiLevel').value=S.setup.ai;
+$('#tankRange').value=S.setup.tankRange;$('#tankReload').value=S.setup.tankReload;$('#animSpeed').value=String(S.setup.anim);
 setTool('track');renderModeOpts();renderSlots();setView('edit');
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>compose());
 requestAnimationFrame(render);
