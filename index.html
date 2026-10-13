@@ -125,6 +125,11 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
 .zoombar{position:absolute;left:8px;bottom:8px;display:flex;gap:4px;align-items:center;background:rgba(255,255,255,.92);border:1px solid var(--rule);border-radius:9px;padding:4px}
 .zoombar button{border:1px solid var(--rule);background:var(--sheet);border-radius:6px;min-width:32px;height:30px;cursor:pointer;font-weight:700}
 .zoombar span{font-family:var(--f-mono);font-size:11px;color:var(--ink-2);padding:0 4px;min-width:44px;text-align:center}
+.presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.preset{display:flex;flex-direction:column;gap:3px;padding:5px;border:1px solid var(--rule);border-radius:9px;background:var(--sheet);cursor:pointer;text-align:left;font-weight:600;font-size:12.5px;color:var(--ink)}
+.preset canvas{width:100%;height:auto;border-radius:5px;display:block;background:#c9d3df}
+.preset small{font-weight:400;color:var(--ink-2);font-size:11px;font-family:var(--f-mono)}
+.preset[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--soft)}
 .minimap{position:absolute;right:8px;bottom:8px;border:2px solid var(--ink);border-radius:6px;background:var(--sheet);box-shadow:0 6px 16px -8px rgba(29,41,68,.6);cursor:pointer;touch-action:none;display:block}
 .mmlabel{position:absolute;right:12px;font-family:var(--f-mono);font-size:10px;color:var(--ink-2);background:rgba(255,255,255,.9);padding:0 4px;border-radius:3px;pointer-events:none}
 .overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(232,238,244,.55);backdrop-filter:blur(1.5px);border-radius:6px}
@@ -201,10 +206,16 @@ input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline
         <div id="toolExtra" class="sub"></div>
       </div>
       <div class="group">
+        <h3>기본 맵</h3>
+        <div class="presets" id="presets"></div>
+        <p class="hint" id="pInfo"></p>
+        <div class="inline"><label>크기 배율<select id="pScale"></select></label><button class="btn primary" id="pLoad" style="padding:7px 12px;font-size:13px">이 맵 불러오기</button></div>
+        <div class="btnrow"><button class="btn" id="scaleCur">지금 맵을 이 배율로 키우기</button></div>
+      </div>
+      <div class="group">
         <h3>맵</h3>
         <div class="btnrow">
           <button class="btn" id="mUndo">되돌리기</button>
-          <button class="btn" id="mDefault">기본 맵</button>
           <button class="btn" id="mSave">저장</button>
           <button class="btn" id="mLoad">불러오기</button>
           <button class="btn danger" id="mClear">전체 지우기</button>
@@ -366,6 +377,102 @@ function defaultMap(){
     flags:[[30,7],[53,26],[42,34],[16,31],[36,12]],
     gates:[{a:[24,3],b:[24,11]},{a:[49,22],b:[57,22]},{a:[42,30],b:[42,38]}],
     units:[{type:'tank',x:47,y:32,size:2},{type:'apc',x:30,y:31,size:1}]};
+}
+/* ---------- preset maps ---------- */
+const rd=v=>Math.round(v*100)/100;
+function closedPath(fn,n){const pts=[];for(let i=0;i<n;i++){const q=fn(i/n*Math.PI*2);pts.push([rd(q[0]),rd(q[1])]);}pts.push(pts[0].slice());return pts;}
+function pathTool(path){
+  const cum=[0];for(let i=1;i<path.length;i++)cum.push(cum[i-1]+Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]));
+  const L=cum[cum.length-1];
+  return{L,at(f){f=((f%1)+1)%1;const d=f*L;let i=1;while(i<cum.length-1&&cum[i]<d)i++;const a=path[i-1],b=path[i],sl=(cum[i]-cum[i-1])||1,u=(d-cum[i-1])/sl;
+    const tx=(b[0]-a[0])/sl,ty=(b[1]-a[1])/sl;return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,tx,ty];}};
+}
+function buildPreset(d){
+  const T=pathTool(d.path),r=d.r;
+  const cross=(f,h)=>{const[x,y,tx,ty]=T.at(f),nx=-ty,ny=tx;return{a:[Math.round(x+nx*h),Math.round(y+ny*h)],b:[Math.round(x-nx*h),Math.round(y-ny*h)],tx,ty};};
+  const st=cross(d.startF,r+1.2),ex=st.b[0]-st.a[0],ey=st.b[1]-st.a[1],dir=(ex*st.ty-ey*st.tx)>0?1:-1;
+  const strokes=[{k:'t',r,pts:d.path}].concat(d.extra||[]);
+  const band=(k,f1,f2,rr)=>{const pts=[];let f2b=f2<f1?f2+1:f2;for(let f=f1;f<=f2b+1e-9;f+=.004){const q=T.at(f);pts.push([rd(q[0]),rd(q[1])]);}return{k,r:rr,pts};};
+  for(const o of d.oil||[])strokes.push(band('o',o[0],o[1],o[2]));
+  for(const o of d.bomb||[])strokes.push(band('b',o[0],o[1],o[2]));
+  const flags=[];for(const f of d.flags||[]){const q=T.at(f[0]!==undefined?f[0]:f),off=f[1]||0;const p=[Math.round(q[0]-q[3]*off),Math.round(q[1]+q[2]*off)];if(!flags.some(z=>z[0]===p[0]&&z[1]===p[1]))flags.push(p);}
+  const gates=(d.gates||[]).map(f=>{const c=cross(f,r+.8);return{a:c.a,b:c.b};});
+  const units=(d.units||[]).map(([f,type,size,off])=>{const q=T.at(f),cx=q[0]-q[3]*(off||0),cy=q[1]+q[2]*(off||0);return{type,size,x:Math.round(cx-(size-1)/2),y:Math.round(cy-(size-1)/2),ctrl:'auto'};});
+  return{cols:d.cols,rows:d.rows,strokes,start:{a:st.a,b:st.b,dir},flags,gates,units};
+}
+const PRESETS=[
+  {id:'loop',name:'기본 고리',desc:'처음 맵. 굽은 길과 기름, 작은 폭격 구역',make:()=>defaultMap()},
+  {id:'oval',name:'오벌 스피드웨이',desc:'넓고 빠른 타원. 10명 출발도 넉넉해요',make:()=>buildPreset({cols:64,rows:40,r:5,
+    path:closedPath(t=>[32+24*Math.cos(t),20+13*Math.sin(t)],64),startF:.5,
+    gates:[.62,.85,.12,.35],flags:[.08,.2,.3,.42,.58,.7,.8,.92],oil:[[.14,.18,2.2],[.66,.69,1.8]],bomb:[[.24,.28,3]],
+    units:[[.25,'tank',2,2],[.0,'apc',1,-2]]})},
+  {id:'eight',name:'8자 트랙',desc:'가운데에서 길이 엇갈리는 8자 코스',make:()=>buildPreset({cols:84,rows:44,r:3.4,
+    path:closedPath(t=>[42+32*Math.sin(t),22+15*Math.sin(2*t)],96),startF:.25,
+    gates:[.4,.6,.9,.1],flags:[.05,.15,.33,.45,.55,.67,.85,.95],oil:[[.47,.53,1.6]],bomb:[[.7,.76,2.6],[.2,.22,2.4]],
+    units:[[.62,'tank',2,0],[.12,'apc',1,1.5]]})},
+  {id:'hairpin',name:'헤어핀 산길',desc:'급커브가 이어지는 구불구불한 길',make:()=>buildPreset({cols:90,rows:56,r:2.8,
+    path:[[12,48],[78,48],[85,41],[80,32],[63,32],[56,24],[63,16],[80,14],[82,7],[60,5],[40,8],[30,17],[40,26],[36,34],[18,36],[8,28],[5,40],[12,48]],startF:.03,
+    gates:[.2,.42,.6,.8],flags:[.1,.25,.35,.48,.55,.68,.78,.9],oil:[[.31,.34,1.8],[.72,.74,1.6]],bomb:[[.12,.16,2.4],[.5,.53,2.4]],
+    units:[[.45,'tank',1,0],[.86,'apc',1,0]]})},
+  {id:'city',name:'도심 서킷',desc:'직각 코너뿐인 좁은 시가지 코스',make:()=>buildPreset({cols:80,rows:50,r:2.4,
+    path:[[10,44],[70,44],[70,30],[54,30],[54,20],[72,20],[72,6],[30,6],[30,22],[16,22],[16,8],[6,8],[6,44],[10,44]],startF:.04,
+    gates:[.18,.38,.62,.82],flags:[.1,.22,.3,.45,.52,.66,.75,.9],oil:[[.15,.16,2.6],[.29,.3,2.6],[.69,.7,2.6]],bomb:[[.45,.5,2.2]],
+    units:[[.55,'apc',1,0]]})},
+  {id:'island',name:'섬 랠리',desc:'물결치는 해안 길, 기름 웅덩이가 많아요',make:()=>buildPreset({cols:76,rows:48,r:3.2,
+    path:closedPath(t=>{const R=1+.2*Math.sin(5*t);return[38+26*R*Math.cos(t),24+15*R*Math.sin(t)];},120),startF:.5,
+    gates:[.6,.75,.9,.05,.2,.35],flags:[.1,.17,.28,.4,.55,.67,.8,.93],oil:[[.08,.1,2],[.3,.32,2],[.62,.64,2],[.83,.85,2]],bomb:[[.45,.48,2.6]],
+    units:[[.25,'tank',1,0]]})},
+  {id:'warzone',name:'사막 전쟁터',desc:'넓은 고리와 바위, 폭격 구역, 전차 부대. 전쟁 모드용',make:()=>buildPreset({cols:96,rows:64,r:9,
+    path:[[20,16],[76,16],[80,20],[80,44],[76,48],[20,48],[16,44],[16,20],[20,16]],startF:.875,
+    extra:[{k:'te',r:1.6,pts:[[36,13]]},{k:'te',r:1.4,pts:[[58,51]]},{k:'te',r:1.8,pts:[[83,32]]},{k:'te',r:1.5,pts:[[48,18]]},{k:'te',r:1.3,pts:[[13,40]]}],
+    gates:[.1,.3,.55,.75],flags:[.05,.15,.25,.35,.45,.55,.65,.78,.95],bomb:[[.08,.14,5],[.4,.46,5],[.6,.66,4]],
+    units:[[.2,'tank',2,3],[.3,'tank',2,-3],[.52,'tank',3,0],[.4,'apc',2,4],[.65,'apc',1,-4],[.7,'apc',2,3]]})}
+];
+function scaleMap(m,k){
+  const S2=v=>rd(v*k),R=v=>Math.round(v*k);
+  return{cols:Math.round(m.cols*k),rows:Math.round(m.rows*k),
+    strokes:m.strokes.map(st=>({k:st.k,r:rd(st.r*k),pts:st.pts.map(p=>[S2(p[0]),S2(p[1])])})),
+    start:m.start?{a:[R(m.start.a[0]),R(m.start.a[1])],b:[R(m.start.b[0]),R(m.start.b[1])],dir:m.start.dir}:null,
+    flags:m.flags.map(f=>[R(f[0]),R(f[1])]),
+    gates:m.gates.map(g=>({a:[R(g.a[0]),R(g.a[1])],b:[R(g.b[0]),R(g.b[1])]})),
+    units:m.units.map(u=>{const cx=(u.x+(u.size-1)/2)*k,cy=(u.y+(u.size-1)/2)*k;return Object.assign({},u,{x:Math.round(cx-(u.size-1)/2),y:Math.round(cy-(u.size-1)/2)});})};
+}
+const SCALES=[1,1.5,2,2.5,3,4,5,6,8,10];
+function scaleOptions(cols,rows){return SCALES.filter(k=>Math.round(cols*k)<=MAXC&&Math.round(rows*k)<=MAXR);}
+function drawPreview(cv,m){
+  const W=cv.width,H=cv.height,k=Math.min(W/m.cols,H/m.rows),ox=(W-m.cols*k)/2,oy=(H-m.rows*k)/2,c=cv.getContext('2d');
+  c.fillStyle='#c9d3df';c.fillRect(0,0,W,H);c.fillStyle='#e6ecf2';c.fillRect(ox,oy,m.cols*k,m.rows*k);
+  const layer=(kind,color,pad)=>{const t=document.createElement('canvas');t.width=W;t.height=H;const x=t.getContext('2d');
+    for(const st of m.strokes){if(st.k[0]!==kind)continue;const st2=pad?Object.assign({},st,{r:st.k.length===1?st.r+pad:st.r}):st;x.save();drawStroke(x,st2,k,ox,oy,color);x.restore();}return t;};
+  c.drawImage(layer('t',C.ink,.35),0,0);c.drawImage(layer('t','#fff',0),0,0);
+  c.globalAlpha=.85;c.drawImage(layer('o',C.oil,0),0,0);c.globalAlpha=.7;c.drawImage(layer('b',C.bomb,0),0,0);c.globalAlpha=1;
+  if(m.start){c.strokeStyle=C.ink;c.lineWidth=2;c.beginPath();c.moveTo(ox+m.start.a[0]*k,oy+m.start.a[1]*k);c.lineTo(ox+m.start.b[0]*k,oy+m.start.b[1]*k);c.stroke();}
+  for(const u of m.units){c.fillStyle=u.type==='tank'?C.olive:C.apc;c.fillRect(ox+(u.x-.5)*k,oy+(u.y-.5)*k,Math.max(3,u.size*k),Math.max(3,u.size*k));}
+}
+let presetSel=0;
+function renderPresets(){
+  const el=$('#presets');
+  el.innerHTML=PRESETS.map((p,i)=>`<button class="preset" data-i="${i}" aria-pressed="${i===presetSel}"><canvas width="240" height="150"></canvas><span>${p.name}</span></button>`).join('');
+  el.querySelectorAll('.preset').forEach(b=>{const i=+b.dataset.i,m=PRESETS[i].make();PRESETS[i].dims=[m.cols,m.rows];drawPreview(b.querySelector('canvas'),m);
+    b.querySelector('span').insertAdjacentHTML('afterend',`<small>${m.cols}×${m.rows}</small>`);
+    b.onclick=()=>{presetSel=i;el.querySelectorAll('.preset').forEach(x=>x.setAttribute('aria-pressed',x===b));updatePresetInfo();};});
+  updatePresetInfo();
+}
+function updatePresetInfo(){
+  const p=PRESETS[presetSel],[c,r]=p.dims,sel=$('#pScale'),prev=+sel.value||1,ops=scaleOptions(c,r);
+  sel.innerHTML=ops.map(k=>`<option value="${k}">×${k} — ${Math.round(c*k)}×${Math.round(r*k)}칸</option>`).join('');
+  sel.value=String(ops.includes(prev)?prev:1);
+  $('#pInfo').textContent=p.desc;
+}
+function loadPreset(){
+  const p=PRESETS[presetSel],k=+$('#pScale').value||1;let m=p.make();if(k!==1)m=scaleMap(m,k);
+  pushUndo();setMap(m);fitView();autosave();$('#mStatus').textContent=`"${p.name}"을 ×${k} 크기(${m.cols}×${m.rows}칸)로 불러왔어요.`;
+}
+function scaleCurrent(){
+  const k=+$('#pScale').value||1;if(k===1){$('#mStatus').textContent='배율을 1보다 크게 골라 주세요.';return;}
+  const c=Math.round(S.map.cols*k),r=Math.round(S.map.rows*k);
+  if(c>MAXC||r>MAXR){$('#mStatus').textContent=`×${k}이면 ${c}×${r}칸이라 최대 ${MAXC}×${MAXR}칸을 넘어요. 더 작은 배율을 골라 주세요.`;return;}
+  pushUndo();setMap(scaleMap(S.map,k));fitView();autosave();$('#mStatus').textContent=`지금 맵을 ×${k}로 키웠어요 (${c}×${r}칸).`;
 }
 function normMap(m){m.strokes=m.strokes||[];m.flags=m.flags||[];m.gates=m.gates||[];m.units=(m.units||[]).map(u=>Object.assign({ctrl:'auto'},u));if(m.start===undefined)m.start=null;return m;}
 
@@ -1571,7 +1678,8 @@ $('#brush').oninput=e=>{S.brush=+e.target.value;$('#brushOut').textContent=S.bru
 $('#gApply').onclick=applyGrid;
 function doUndo(){const s=S.undo.pop();if(!s){$('#mStatus').textContent='더 되돌릴 게 없어요.';return;}setMap(JSON.parse(s));autosave();$('#mStatus').textContent='한 단계 되돌렸어요.';}
 $('#mUndo').onclick=doUndo;
-$('#mDefault').onclick=()=>{pushUndo();setMap(defaultMap());fitView();autosave();$('#mStatus').textContent='기본 맵을 불러왔어요.';};
+$('#pLoad').onclick=loadPreset;
+$('#scaleCur').onclick=scaleCurrent;
 $('#mSave').onclick=()=>{$('#mStatus').textContent=store.set('mg-slot',JSON.stringify({map:S.map}))?'이 브라우저에 맵을 저장했어요.':'이 브라우저에서는 저장할 수 없어요.';};
 $('#mLoad').onclick=()=>{const s=store.get('mg-slot');if(!s){$('#mStatus').textContent='저장한 맵이 없어요.';return;}try{const o=JSON.parse(s);pushUndo();setMap(o.map);fitView();autosave();$('#mStatus').textContent='저장한 맵을 불러왔어요.';}catch(e){$('#mStatus').textContent='저장한 맵을 읽지 못했어요.';}};
 let clearArm=0;
@@ -1599,7 +1707,7 @@ if(window.ResizeObserver)new ResizeObserver(()=>resizeBoard()).observe(holder);e
 syncGridInputs();
 $('#brush').value=S.brush;$('#brushOut').textContent=S.brush+'칸';$('#aiLevel').value='';$('#camMode').value=S.setup.cam;
 $('#tankRange').value=S.setup.tankRange;$('#tankReload').value=S.setup.tankReload;$('#animSpeed').value=String(S.setup.anim);
-setTool('track');renderModeOpts();renderSlots();setView('edit');
+setTool('track');renderModeOpts();renderSlots();renderPresets();setView('edit');
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>compose());
 requestAnimationFrame(render);
 })();
